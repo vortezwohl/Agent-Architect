@@ -1,6 +1,6 @@
 ---
 name: agent-architect
-description: Teach and govern software design-pattern decisions for new features, architecture, refactoring, and optimization. Use when Codex must choose, justify, apply, reject, or review GoF design patterns; remove structural code smells; define extension boundaries; integrate frameworks or legacy APIs; or prevent AI-generated code from becoming over-abstracted, tightly coupled, or hard to evolve.
+description: "Provide architecture guardrails for non-trivial feature work, refactors, integrations, and structural changes. Use proactively before generating or reviewing code that may introduce boundaries, dependencies, state, lifecycles, abstractions, concurrency, or evolution costs. Inspect the repository, choose the smallest justified design, and make validation and remaining risks explicit."
 ---
 
 # Agent Architect
@@ -19,7 +19,7 @@ Design for the next verified change, not for a pattern name. Treat patterns as t
 
 ## Non-negotiable rules
 
-- Do not start from “Which pattern should I use?” Start from “What changes independently, and what remains stable?”
+- Do not begin by generating structure or choosing a pattern by resemblance. First identify what changes independently and what remains stable.
 - Do not introduce an interface, factory, wrapper, event, inheritance hierarchy, global object, or framework layer without naming the concrete variation it isolates and the cost it adds.
 - Do not claim a pattern is appropriate because its class diagram resembles the code. Decide by intent, collaborators, lifecycle, and failure modes.
 - Do not use a pattern merely because a framework uses it internally. Follow the framework’s extension mechanisms rather than reproducing its internal architecture.

@@ -2,10 +2,10 @@
 
 # Agent Architect
 
-**Architecture judgment for coding agents.**
+**The architecture guardrail for coding agents.**
 
-*Most coding agents can write code.<br />
-Few can defend an architecture decision.*
+*Your agent is already making architecture decisions.<br />
+Do not let it make them silently.*
 
 [![Agent Skill](https://img.shields.io/badge/Agent%20Skill-agent--architect-111827?style=flat-square)](https://github.com/vortezwohl/Agent-Architect/tree/main/skills/agent-architect)
 [![MIT License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](https://github.com/vortezwohl/Agent-Architect/blob/main/LICENSE)
@@ -13,10 +13,10 @@ Few can defend an architecture decision.*
 
 <br />
 
-> <strong>Stop asking agents which pattern to use.</strong><br />
-> Ask them to prove <strong>what must change independently</strong>.
+> <strong>No architecture by accident.</strong><br />
+> <strong>No abstraction by speculation.</strong>
 
-[Install](#install) &middot; [What It Does](#what-it-does) &middot; [See It Think](#see-it-think) &middot; [Protocol](#the-decision-protocol)
+[Install](#install) &middot; [The Problem](#the-problem) &middot; [See The Difference](#see-the-difference) &middot; [Protocol](#the-decision-protocol)
 
 </div>
 
@@ -24,149 +24,171 @@ Few can defend an architecture decision.*
 
 ## The problem
 
-AI makes implementation cheap.
+Most users do not ask an agent to make an architecture decision.
 
-It also makes **bad architecture cheap to multiply**:
-
-- An interface for one stable implementation.
-- A factory for a constructor call.
-- An event bus without delivery semantics.
-- Inheritance where a function would do.
-- "Future-proofing" with no proven future.
-
-The result looks sophisticated in a PR and becomes expensive in production.
-
-> ## No abstraction without a proven variation point.
-
-**Agent Architect** gives coding agents a decision protocol for architecture, refactoring, design patterns, boundaries, lifecycles, and evolution.
-
-It does not ask:
+They ask it to do ordinary work:
 
 ```text
-Which pattern should I use?
+Add an invoice-download endpoint.
+Build a settings page.
+Connect this service to a new provider.
+Refactor this module.
+Make this feature extensible.
 ```
 
-It asks:
+Before the agent writes its first line, it has already started deciding:
 
-```text
-What changes independently?
-What stays stable?
-What is the smallest design that isolates the proven change?
-How will we verify that the new structure is worth its cost?
-```
+- Which module owns the behavior and state.
+- Which dependencies cross a boundary.
+- Which failure paths become public behavior.
+- Whether a direct implementation, an abstraction, or a framework extension is justified.
+- How the change will evolve, migrate, roll back, and be verified.
 
----
+Those are architecture decisions.
 
-## What it does
+Without an explicit protocol, agents usually fail in one of three ways:
 
 <table>
 <tr>
-<th align="left">Instead of this</th>
-<th align="left">Agent Architect requires this</th>
+<th align="left">Failure</th>
+<th align="left">What happens</th>
 </tr>
 <tr>
-<td>"Use Factory because we may add providers later."</td>
-<td>Name the real creation variation, affected callers, lifecycle, and why a constructor or injected function is insufficient.</td>
+<td><strong>Architecture by accident</strong></td>
+<td>The agent writes the feature directly into the nearest file. Dependencies, state, and error paths spread before anyone has named the boundary.</td>
 </tr>
 <tr>
-<td>"Add an event for asynchronous processing."</td>
-<td>Define transaction boundary, delivery guarantee, ordering, retry, idempotency, and consistency model.</td>
+<td><strong>Abstraction by speculation</strong></td>
+<td>The agent sees a possible future and creates interfaces, factories, registries, events, or inheritance before a real variation exists.</td>
 </tr>
 <tr>
-<td>"Introduce an interface for clean architecture."</td>
-<td>Identify the independent variation it isolates and the ongoing cost of maintaining it.</td>
-</tr>
-<tr>
-<td>"Refactor complete."</td>
-<td>State the exact normal, boundary, failure, integration, and operational validation actually performed.</td>
+<td><strong>Verification by assertion</strong></td>
+<td>The agent calls the refactor clean or complete without proving behavior, compatibility, failure handling, or remaining risk.</td>
 </tr>
 </table>
 
-### The output is auditable
+**Agent Architect** is the guardrail between a non-trivial coding request and structural complexity.
 
-For every non-trivial design or refactor, the agent produces:
-
-```text
-01. Design diagnosis
-    Objective, non-goals, evidence, callers, stable core,
-    variation points, smells, and constraints.
-
-02. Alternatives
-    The smallest direct design, candidate patterns,
-    rejected neighbors, and added structural cost.
-
-03. Decision
-    Chosen design, including a justified decision to use no pattern.
-
-04. Verification
-    Tests, operational checks, remaining uncertainty, and risk.
-```
+It makes the agent inspect reality, choose the smallest justified design, and report the evidence before complexity spreads.
 
 ---
 
-## See it think
+## What it changes
 
-### Wrong: the common AI answer
+### Before Agent Architect
 
-> "This payment module may support Stripe, PayPal, and more providers later. Let's create an `IPaymentProvider`, `PaymentProviderFactory`, `PaymentProviderRegistry`, and `PaymentProviderEventBus`."
+```text
+User: "Add an invoice-download endpoint."
 
-### Right: the Agent Architect answer
+Agent: writes a handler, reaches into persistence, calls storage,
+adds authorization inline, creates an ExportFactory "for future formats,"
+and reports that the endpoint is complete.
+```
 
-> **Observed evidence:** only Stripe exists; there is one caller; no provider selection exists in product requirements; no second integration is scheduled.
->
-> **Smallest direct design:** keep the injected `StripeClient` dependency.
->
-> **Decision:** reject Factory, Registry, and Event Bus. They isolate no proven variation and add ownership, registration, test, and failure-path cost.
->
-> **Extraction trigger:** introduce a provider seam when a second provider must coexist behind the same business operation, with shared caller expectations and independently changing provider behavior.
->
-> **Verification:** preserve current payment failure semantics and characterize the provider boundary before extraction.
+### With Agent Architect
 
-That is not "less architecture."
+```text
+User: "Add an invoice-download endpoint."
 
-That is **architecture with evidence**.
+Agent:
+1. Inspects existing invoice ownership, authorization, storage, callers,
+   error handling, and tests.
+2. Names the actual change: one new HTTP entry point for one existing
+   invoice artifact.
+3. Compares the direct application-service call with a new export layer.
+4. Keeps the direct design when there is one format and one storage path.
+5. Records the extraction trigger: multiple independently changing export
+   formats or storage providers behind the same application operation.
+6. Verifies authorization, missing invoices, storage failure, and the
+   existing invoice flow.
+```
+
+The result is not less engineering.
+
+It is **engineering with an explicit decision, a smaller blast radius, and a verification path**.
 
 ---
 
 ## The decision protocol
 
 ```text
-Inspect reality
+Receive a non-trivial coding request
       |
       v
-Name the proven change
+Inspect the repository and current behavior
       |
-      +-- No proven independent variation?
+      v
+Name the proven change, stable core, constraints, and failure paths
+      |
+      +-- No independent variation is evidenced?
       |     `-- Keep the direct design. Record the extraction trigger.
       |
       v
-Compare the smallest direct solution
+Compare the smallest direct solution with candidate structures
       |
       v
-Evaluate candidate patterns by intent, lifecycle, and failure modes
+Reject unnecessary interfaces, factories, wrappers, events, and inheritance
       |
       v
-Reject look-alike patterns
+Check ownership, lifecycle, API direction, transactions, concurrency,
+rollback, observability, and framework conventions
       |
       v
-Check API direction, ownership, transactions, concurrency, and rollback
+Implement one smallest verified slice
       |
       v
-Verify behavior at the right boundary
-      |
-      v
-Report evidence, decision, validation, and remaining risk
+Report evidence, decision, validation performed, and remaining risk
 ```
 
 ### Non-negotiable rules
 
-- Do not start from **"Which pattern should I use?"**
+- Do not generate structure before naming what changes independently and what remains stable.
+- Do not introduce an interface, factory, wrapper, event, inheritance hierarchy, global object, or framework layer without naming the concrete variation it isolates and the cost it adds.
 - Do not turn uncertainty into speculative abstraction.
 - Do not call an event an async design without delivery semantics.
 - Do not use Singleton to avoid dependency injection.
 - Do not use inheritance when composition, callbacks, or direct functions are clearer.
-- Do not call an unverified refactor complete.
-- Do not add a type, wrapper, event, global, or factory without naming the concrete change it isolates.
+- Do not call an unverified implementation or refactor complete.
+
+---
+
+## What the agent produces
+
+For every non-trivial feature, integration, design, or refactor, Agent Architect produces an auditable record:
+
+```text
+01. Design diagnosis
+    Objective, non-goals, repository evidence, callers, stable core,
+    variation points, smells, and constraints.
+
+02. Alternatives
+    The smallest direct design, candidate structures,
+    rejected alternatives, and ongoing structural cost.
+
+03. Decision
+    Chosen design, public API and dependency impact,
+    migration and rollback implications, or a justified decision to use no pattern.
+
+04. Verification
+    Normal, boundary, failure, integration, and operational checks;
+    validation actually run; and remaining uncertainty or risk.
+```
+
+---
+
+## When to use it
+
+Use Agent Architect **before implementing or reviewing any non-trivial change**, including:
+
+- New features that cross modules, layers, or services.
+- Refactors that alter dependencies, ownership, state, or lifecycle.
+- Third-party integrations and legacy adaptation.
+- Async, event, transaction, retry, cache, or authorization work.
+- Requests to make a system "clean," "extensible," "scalable," or "future-proof."
+- PR reviews where code looks reasonable but its structural decision is implicit.
+
+> [!TIP]
+> Do not wait for a user to ask an architecture question. Add this skill to the agent workflow that handles feature work and structural changes.
 
 ---
 
@@ -182,7 +204,7 @@ Restart Codex after installation.
 
 ### Other Agent Skills-compatible tools
 
-Copy the `skills/agent-architect/` directory into the tool's supported skills location, then invoke the skill by its name:
+Copy `skills/agent-architect/` into the tool's supported skills location, then invoke:
 
 ```text
 agent-architect
@@ -198,30 +220,33 @@ agent-architect
 Ask your coding agent:
 
 ```text
-Use $agent-architect to design or refactor this software
-with the smallest justified pattern set.
+Use $agent-architect before implementing or reviewing this non-trivial change.
+Inspect the repository, choose the smallest justified design,
+then implement and verify it.
 ```
 
-Useful prompts:
+Examples:
 
 ```text
-Use $agent-architect to review this PR for speculative abstractions.
+Use $agent-architect before adding this payment provider.
 
-Use $agent-architect to decide whether this module needs Strategy,
-a direct function, or no extraction.
+Use $agent-architect to review this feature for accidental architecture
+and speculative abstractions.
 
-Use $agent-architect to refactor this service while preserving behavior.
+Use $agent-architect before refactoring this service boundary.
+Preserve behavior and report the migration and rollback implications.
 
-Use $agent-architect to compare Adapter, Decorator, and Proxy
-for this integration boundary.
-
-Use $agent-architect to design the migration and rollback plan
-for replacing this subsystem.
+Use $agent-architect to determine whether this integration needs an adapter,
+a direct dependency, or a framework extension.
 ```
 
 ---
 
-## What it covers
+## Patterns are tools, not the product
+
+Agent Architect covers all 23 GoF patterns, but it does not begin with a pattern catalog.
+
+It begins with evidence: **what varies, who owns it, what fails, and what must remain stable.**
 
 <details>
 <summary><b>Creational decisions</b></summary>
@@ -276,7 +301,7 @@ for replacing this subsystem.
 | Observer | Chain of Responsibility or Command |
 | Composite | Decorator |
 
-Agent Architect chooses by **intent, collaborators, lifecycle, variation, and failure behavior** - never by a class diagram alone.
+Patterns are selected by **intent, collaborators, lifecycle, variation, and failure behavior** - never by a class diagram alone.
 
 </details>
 
@@ -286,11 +311,11 @@ Agent Architect chooses by **intent, collaborators, lifecycle, variation, and fa
 
 | Not this | But this |
 | --- | --- |
-| A design-pattern encyclopedia | A decision protocol for selecting, rejecting, or combining patterns |
-| A ceremony generator | A guardrail against needless layers |
-| "Clean architecture" by default | Explicit dependency-direction and lifecycle analysis |
-| A promise that every problem needs a pattern | Permission to choose the direct design |
-| A substitute for engineering ownership | A way to make agent-produced decisions inspectable |
+| A pattern encyclopedia | An architecture decision protocol for coding agents |
+| A ceremony generator | A guardrail against accidental complexity |
+| "Clean architecture" by default | Explicit analysis of boundaries, dependencies, and lifecycle |
+| A reason to add layers | Permission to keep the direct design when evidence is absent |
+| A substitute for engineering ownership | A way to make agent-produced structure auditable and verifiable |
 
 ---
 
@@ -308,16 +333,16 @@ skills/
         `-- source-article.md
 ```
 
-- `SKILL.md` - operating rules and required decision record
+- `SKILL.md` - operating rules and the required design record
 - `decision-protocol.md` - binding diagnostic, selection, refactoring, and review gates
-- `gof-patterns.md` - intent, trade-offs, misuse cases, and verification guidance
-- `source-article.md` - architecture principles and pattern context for the AI coding era
+- `gof-patterns.md` - pattern intent, trade-offs, misuse cases, and verification guidance
+- `source-article.md` - architecture principles for the AI coding era
 
 ---
 
 ## The standard
 
-A design is not complete because it has more layers.
+A feature is not complete because it compiles.
 
 A refactor is not complete because the code looks cleaner.
 
@@ -340,18 +365,18 @@ What risk remains?
 
 Contributions should improve **judgment**, not add ceremony.
 
-Good contributions:
+Useful contributions include:
 
-- Better evidence gates for real architecture decisions.
+- Evidence gates for real feature and architecture decisions.
 - Clearer pattern boundaries and rejection criteria.
-- Reproducible examples of overengineering and minimal alternatives.
+- Reproducible examples of accidental architecture and speculative abstraction.
 - Verification guidance for lifecycle, concurrency, transactions, migration, and rollback.
-- Corrections that make agents less likely to over-abstract.
+- Corrections that make agents less likely to spread structural complexity.
 
 Before opening a change, ask:
 
 ```text
-Does this improve a decision an agent can make?
+Does this improve a decision an agent can make before code spreads?
 Can the improvement be verified?
 Does it add guidance without adding speculative process?
 ```
@@ -366,8 +391,8 @@ MIT. See [LICENSE](LICENSE).
 
 <div align="center">
 
-### If your agent adds abstractions faster than it can justify them, install this skill.
+### Do not let your coding agent silently design your system.
 
-<strong>Star it. Fork it. Use it in your next architecture review.</strong>
+<strong>Star it. Fork it. Add it before your next non-trivial change.</strong>
 
 </div>
