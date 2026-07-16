@@ -222,9 +222,9 @@ Use the explicit three-stage workflow:
 Use $architect-design to inspect this non-trivial change, make compatibility intent explicit,
 and obtain approval for the smallest justified architecture.
 
-After approval, use $architect-propose <change-name> to create and validate the project-local change package.
+After approval, use $architect-propose [plan-name] to create and validate the project-local plan package.
 
-Only after package validation passes, use $architect-build <change-name> to implement one bounded task at a time.
+Only after package validation passes, use $architect-build [plan-name] to implement one bounded task at a time.
 ```
 
 Examples:
@@ -363,7 +363,7 @@ skills/
 ```
 
 - `architect-design` -- evidence-based architecture diagnosis and explicit consent
-- `architect-propose` -- project-local, validated change packages
+- `architect-propose` -- project-local, validated plan packages
 - `architect-build` -- task-scoped implementation and verification
 
 ---

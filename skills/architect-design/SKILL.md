@@ -1,6 +1,6 @@
 ---
 name: architect-design
-description: "Analyze non-trivial feature work, refactors, integrations, and structural changes before planning or implementation. Resolve compatibility intent, inspect evidence, study relevant design patterns and architecture alternatives, choose the smallest justified design, and obtain explicit architecture consent. Use when a change may introduce or alter boundaries, dependencies, state, lifecycles, abstractions, concurrency, or evolution costs."
+description: "Analyze non-trivial feature work, refactors, integrations, and structural changes before planning or implementation. Resolve compatibility intent, inspect evidence, study relevant design patterns and architecture alternatives, choose the smallest justified design, and obtain explicit architecture consent. Use when a plan may introduce or alter boundaries, dependencies, state, lifecycles, abstractions, concurrency, or evolution costs."
 ---
 
 # Architect Design
@@ -10,8 +10,8 @@ Design for the next verified change, not for a pattern name. Treat patterns as t
 `architect-design` is the decision stage of a three-skill workflow:
 
 1. `architect-design`: investigate, diagnose, and obtain architecture consent.
-2. `architect-propose`: record an approved decision as a build-ready change package.
-3. `architect-build`: implement only a validated change package.
+2. `architect-propose`: record an approved decision as a build-ready plan package.
+3. `architect-build`: implement only a validated plan package.
 
 ## Core design priorities
 
@@ -22,10 +22,10 @@ Design for the next verified change, not for a pattern name. Treat patterns as t
 
 ## Strict boundary
 
-- Do not create a project change package.
+- Do not create a project plan package.
 - Do not edit application code, tests, configuration, or project documentation.
 - Do not begin implementation after approval.
-- After approval, ask whether to continue with `$architect-propose <change-name>` or stop at design.
+- After approval, ask whether to continue with `$architect-propose` or stop at design.
 
 ## Mandatory operating protocol
 
@@ -40,7 +40,7 @@ Design for the next verified change, not for a pattern name. Treat patterns as t
 9. Prefer the smallest design that isolates a proven change. A direct implementation is a valid and often preferred decision.
 10. Present a bounded architecture proposal and obtain explicit architecture consent.
 11. Record the required design record in the response. State facts, assumptions, and unresolved questions separately.
-12. After consent, either stop with the approved design or offer `$architect-propose <change-name>`; do not create artifacts automatically.
+12. After consent, either stop with the approved design or offer `$architect-propose`; do not create artifacts automatically.
 
 ## Non-negotiable rules
 
@@ -100,7 +100,6 @@ For every non-trivial design, optimization, or refactor, provide this record bef
 
 A handoff to `architect-propose` must include:
 
-- A kebab-case change name.
 - The recorded compatibility intent.
 - The approved architecture decision and approval evidence.
 - The bounded objective, non-goals, and affected contracts.
@@ -116,4 +115,4 @@ If any item is missing, continue design work or ask the user; do not imply that 
 
 ## Completion standard
 
-Finish only when the selected design is justified against a simpler alternative, the compatibility contract and architecture consent are recorded, adjacent patterns are ruled in or out by intent, the required validation boundary is explicit, and the user can clearly decide whether to stop at design or continue with a change package.
+Finish only when the selected design is justified against a simpler alternative, the compatibility contract and architecture consent are recorded, adjacent patterns are ruled in or out by intent, the required validation boundary is explicit, and the user can clearly decide whether to stop at design or continue with a plan package.

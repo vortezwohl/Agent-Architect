@@ -1,6 +1,6 @@
-# Change Overview
+# Plan Overview
 
-- Change name: [REQUIRED]
+- Plan name: [REQUIRED]
 - Status: proposed
 - Approved architecture decision: [REQUIRED]
 - Approval evidence: [REQUIRED]

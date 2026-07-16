@@ -1,4 +1,4 @@
-"""Validate whether an Architect change package satisfies build prerequisites.
+"""Validate whether an Architect plan package satisfies build prerequisites.
 
 This script validates only the completeness and executability of proposal-stage
 artifacts. It no longer saves or compares a workspace snapshot.
@@ -49,7 +49,7 @@ def validate_package(package_root: Path) -> list[str]:
     """Validate required documents, required sections, and task fields.
 
     Args:
-        package_root: Change package root directory.
+        package_root: Plan package root directory.
 
     Returns:
         Validation error list. An empty list means the package passes.
@@ -86,16 +86,16 @@ def validate_package(package_root: Path) -> list[str]:
 def main() -> int:
     """Parse CLI arguments and print the package validation result."""
     parser = argparse.ArgumentParser(
-        description="Validate an Architect change package before build.",
+        description="Validate an Architect plan package before build.",
     )
     parser.add_argument("--repo-root", required=True, type=Path)
-    parser.add_argument("--change", required=True)
+    parser.add_argument("--plan", required=True)
     arguments = parser.parse_args()
 
     package_root = (
         arguments.repo_root.resolve()
         / ".architect"
-        / arguments.change
+        / arguments.plan
     )
     errors = validate_package(package_root)
     if errors:

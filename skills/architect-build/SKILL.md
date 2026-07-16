@@ -1,22 +1,22 @@
 ---
 name: architect-build
-description: "Implement a validated architecture change package produced by Architect Propose. Use when the user wants to build or continue a named .architect/<change-name>/ package with task-scoped edits, task-level verification, and implementation logging."
+description: "Implement a validated architecture plan package produced by Architect Propose. Use when the user wants to build or continue a named .architect/<plan-name>/ package with task-scoped edits, task-level verification, and implementation logging."
 ---
 
 # Architect Build
 
-Build only what the approved change package specifies. The package is the implementation contract; it is not a suggestion or a starting point for new architecture work.
+Build only what the approved plan package specifies. The package is the implementation contract; it is not a suggestion or a starting point for new architecture work.
 
 ## Strict boundary
 
 - Do not select a new architecture, introduce unplanned abstractions, or expand file scope.
-- Do not implement when the change package fails preflight.
+- Do not implement when the plan package fails preflight.
 - Do not mark a task complete before its specified verification succeeds.
 - Do not continue after a precondition mismatch, design contradiction, missing detail, or task-scope expansion. Return to `$architect-propose` with a precise discrepancy.
 
 ## Input and selection
 
-Accept an optional kebab-case change name. If omitted:
+Accept an optional kebab-case plan name. If omitted:
 
 1. Infer it from explicit conversation context.
 2. Auto-select only when exactly one active package exists under `.architect/`.
