@@ -13,7 +13,9 @@ Maintain this protocol and all skill instructions in English. Use the user's cur
 5. Read `source-article.md` only after Step 4 is satisfied and before the first design decision for methodology, pattern framing, and AI-era misuse warnings.
 6. Read `gof-patterns.md` for candidate patterns and neighboring comparisons before selecting, rejecting, or reviewing a GoF pattern.
 7. Convert what those references teach into explicit reasoning. Do not cite them mechanically or treat a pattern name as sufficient evidence.
-8. When gathering external evidence beyond the local references, prioritize English-language academic papers first, best-practice articles from top-tier engineering organizations second, and other reliable supporting sources third. Do not treat framework documentation as a default theory source.
+8. Keep knowledge-source precedence and design-decision authority separate. Learn external supporting theory in this order: `source-article.md`, external English-language academic papers, best-practice articles from top-tier engineering organizations, then other reliable supporting sources only if still needed.
+9. Do not treat framework documentation as a default theory source, and do not treat a best practice, a famous paper, or a top-tier company example as a design command.
+10. Repository facts, the current request, and the user-confirmed compatibility boundary outrank every external source. External knowledge may support a design only after repository-first reasoning proves that it fits this repository better than the available alternatives.
 
 ## Defined Terms
 
@@ -47,6 +49,7 @@ After Gate 0, inspect and deepen only the evidence relevant to the change: calle
 
 Design remains read-only while collecting this evidence. You may read, inspect, compare, and reason about repository files, but you must not edit code, tests, configuration, documentation, plans, or generated artifacts in this stage.
 Do not treat external architecture learning as a substitute for minimal context extraction or for basic repository understanding. The repository gate comes first.
+Do not copy an external architecture only because it appears successful, elegant, widely adopted, or endorsed by a top-tier company. First derive the design from the repository facts, the request, the compatibility boundary, the real stable core, the actual variation, and the failure semantics that exist here.
 
 Choose the globally best justified architecture for the stated evolution horizon under the current code reality, the user-approved compatibility boundary, and the strongest supporting external evidence. Compare the direct alternative, but do not grant it automatic priority merely because it is smaller. The approved design bundle may contain multiple `D-xxx` subdesigns. Every chosen `D-xxx` subdesign must include:
 - A recognized engineering concept or pattern, canonical name, category, and reliable reference.
@@ -62,7 +65,9 @@ Do not introduce an unnamed abstraction, speculative extension point, hidden glo
 Before asking for approval, teach the design instead of only presenting a conclusion. For every non-trivial `D-xxx` subdesign, explain at least:
 
 - The concrete problem this concept solves in the current repository or request.
+- The repository facts, request constraints, and compatibility requirements that make this problem real here.
 - The stable core and the real variation that justify the concept.
+- How the cited paper, pattern, or best practice was adapted to this repository instead of copied from a foreign context.
 - The simplest direct design that was considered, and why it was accepted or rejected.
 - The nearest neighboring pattern or abstraction that was rejected, and why.
 - The likely misuse, counterexample, or operational failure that would make this concept a poor fit.

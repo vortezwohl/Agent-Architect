@@ -76,9 +76,46 @@ without guessing:
   comparison before minimal context extraction is complete.
 - Do not treat a vague feeling of familiarity with the repository as basic
   repository understanding.
+- Do not treat external best practice, a famous paper, or a top-tier company
+  example as a design command.
 - Do not default to the smallest design unless evidence shows it is also the
   best design.
 - Do not use a pattern because its shape looks familiar.
+- Do not copy an external architecture because it worked elsewhere. Revalidate
+  it against the current repository facts, the current request, and the
+  user-confirmed compatibility boundary first.
+
+## Knowledge and Decision Precedence
+
+Separate knowledge-source precedence from design-decision authority.
+
+Knowledge-source precedence defines where architecture method and supporting
+theory should be learned from:
+
+1. `references/source-article.md`
+2. External English-language academic papers
+3. Best-practice articles from top-tier engineering organizations
+4. Other reliable supporting sources only when the higher-priority sources are
+   insufficient
+
+Design-decision authority defines what may actually control the design choice:
+
+1. Current repository facts and the current request
+2. The user-confirmed compatibility boundary
+3. The method, framing, and misuse warnings from `references/source-article.md`
+4. Supporting theory from external English-language academic papers
+5. Contextualized best practices from top-tier engineering organizations
+6. Other supporting sources only if they still add necessary evidence
+
+Knowledge-source precedence governs learning order. Design-decision authority
+governs design judgment. A lower-priority knowledge source must never override
+repository facts, the current request, or the user-confirmed compatibility
+boundary.
+
+External best practice is only a candidate heuristic. It becomes relevant to a
+design decision only after repository-first reasoning shows that it fits this
+repository, this request, and this compatibility boundary better than the
+competing alternatives.
 
 ## Working Sequence
 
@@ -98,12 +135,12 @@ without guessing:
 5. Read `references/source-article.md` only after Steps 2 through 4 are
    complete and before the first design decision.
 6. Continue learning beyond the local references. Before proposing a design,
-   gather enough external knowledge to cite concrete supporting evidence from
-   primary English-language internet sources first. Use other reliable language
-   sources only as a fallback. Prioritize English-language academic papers
-   first, best-practice articles from top-tier engineering organizations
-   second, and other reliable supporting sources third. Do not treat framework
-   documentation as a default theory source.
+   gather enough external knowledge to cite concrete supporting evidence in the
+   precedence order defined above. Read external English-language academic
+   papers before top-tier engineering best-practice articles. Use other
+   reliable language sources only as a fallback. Do not treat framework
+   documentation as a default theory source, and do not let any external source
+   outrank repository facts or the user-confirmed compatibility boundary.
 7. Learn the relevant entries in `references/gof-patterns.md` before choosing,
    rejecting, or comparing a GoF pattern. Read neighboring candidates together
    whenever two or more candidate patterns could reasonably fit the same
@@ -124,7 +161,9 @@ without guessing:
 12. Recommend the globally best design under the current code reality, the
     user-confirmed compatibility boundary, and the strongest supporting
     external evidence. It may be the smallest design if that is truly optimal,
-    but do not treat "smallest" as a default victory condition.
+    but do not treat "smallest" as a default victory condition. Do not copy a
+    paper, pattern, or industry example without proving why it fits this
+    repository better than the direct alternatives under current facts.
 13. Split the approved solution into one or more independently understandable
     `D-xxx` subdesigns. One `D-xxx` subdesign owns one architectural decision.
     The full approved design bundle may therefore contain multiple `D-xxx`
@@ -142,9 +181,12 @@ without guessing:
 Before asking for approval, explain for every non-trivial decision:
 
 - what concrete problem the chosen concept solves here;
+- which repository facts and request constraints make this problem real here;
 - what remains stable and what changes independently;
 - what outside knowledge, best practice, or accepted reference most strongly
   supports the decision;
+- how that outside knowledge was adapted to this repository rather than copied
+  from another codebase or company context;
 - whether backward compatibility was required, and if so, what exact surface
   was preserved;
 - which simpler direct design was considered and why it was accepted or
@@ -155,7 +197,10 @@ Before asking for approval, explain for every non-trivial decision:
 - which validation boundary Build must later preserve.
 
 Do not cite the references mechanically. Convert them into reasoning that the
-later stages can reapply.
+later stages can reapply. Every external paper, pattern, or best practice must
+be translated through first-principles reasoning about the current repository,
+the current request, the actual constraints, the true stable core, the real
+variation, and the likely failure modes here.
 
 ## Approval Rule
 
