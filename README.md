@@ -8,7 +8,7 @@
 
 *Build codebases that stay coherent as they grow -- without giant modules, speculative abstractions, or accidental breaking changes.*
 
-[![Architect Workflow](https://img.shields.io/badge/Architect-design%20-%20propose%20-%20build-111827?style=flat-square)](https://github.com/vortezwohl/Agent-Architect/tree/main/skills/architect-design)
+[![Architect Workflow](https://img.shields.io/static/v1?label=Architect&message=design%20%E2%86%92%20propose%20%E2%86%92%20build&color=111827&style=flat-square)](https://github.com/vortezwohl/Agent-Architect/tree/main/skills/architect-design)
 [![MIT License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](https://github.com/vortezwohl/Agent-Architect/blob/main/LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/vortezwohl/Agent-Architect?style=flat-square&label=Stars)](https://github.com/vortezwohl/Agent-Architect/stargazers)
 
@@ -192,6 +192,95 @@ $architect-build <plan-name>
 
 > [!IMPORTANT]
 > Read a skill before installing it. These skills encode execution rules, package contracts, and stage boundaries.
+
+---
+
+## Plugin quick start
+
+After installation, you should see **three plugin commands**:
+
+- `design`
+- `propose`
+- `build`
+
+Use them like a wizard. Click the next one only after the previous one is done.
+
+### Step 1: Design
+
+Use this first.
+
+Tell Architect what you want to change.
+
+```text
+$architect-design Add a second payment provider without breaking checkout.
+```
+
+```text
+/architect:design Add a second payment provider without breaking checkout.
+```
+
+What you get:
+
+- one approved design bundle;
+- clear boundaries;
+- no coding yet.
+
+### Step 2: Propose
+
+Use this after the design is approved.
+
+Give the change a short plan name:
+
+```text
+$architect-propose add-payment-provider
+```
+
+```text
+/architect:propose add-payment-provider
+```
+
+What you get:
+
+- one sealed `.architect/add-payment-provider/` package;
+- task files;
+- verification plan;
+- execution log.
+
+### Step 3: Build
+
+Use this after the plan package exists.
+
+Run the same plan name:
+
+```text
+$architect-build add-payment-provider
+```
+
+```text
+/architect:build add-payment-provider
+```
+
+What happens:
+
+- Architect executes the recorded tasks in order;
+- updates state and logs;
+- keeps the work inside the approved boundary.
+
+### Which one do I click?
+
+- New change: start with `design`
+- Design approved, no plan yet: use `propose`
+- Plan already created: use `build`
+
+### One rule
+
+Do not jump straight to `build`.
+
+The whole point of Architect is:
+
+```text
+design -> propose -> build
+```
 
 ---
 

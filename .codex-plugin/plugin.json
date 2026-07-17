@@ -26,7 +26,9 @@
       "Interactive"
     ],
     "defaultPrompt": [
-      "Use $architect-design before planning this consequential change."
+      "$architect-design [change request]",
+      "$architect-propose [plan-name]",
+      "$architect-build [plan-name]"
     ]
   }
 }

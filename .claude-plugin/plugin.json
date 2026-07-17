@@ -8,6 +8,7 @@
   "homepage": "https://github.com/vortezwohl/Architect",
   "repository": "https://github.com/vortezwohl/Architect",
   "license": "MIT",
+  "commands": "./commands",
   "keywords": [
     "architecture",
     "compatibility",
