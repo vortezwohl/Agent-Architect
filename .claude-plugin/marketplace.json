@@ -4,15 +4,15 @@
     "name": "vortezwohl"
   },
   "metadata": {
-    "description": "Architecture guardrails for verifiable, evolvable code changes.",
-    "version": "1.0.0"
+    "description": "Three-stage approved design, sealed Markdown planning, and checkpoint-controlled build workflow.",
+    "version": "2.0.0"
   },
   "plugins": [
     {
       "name": "architect",
       "source": "./",
-      "description": "Architecture guardrails with compatibility and consent gates.",
-      "version": "1.0.0",
+      "description": "Approved design units, sealed Markdown plans, and checkpoint-controlled builds.",
+      "version": "2.0.0",
       "author": {
         "name": "vortezwohl"
       }

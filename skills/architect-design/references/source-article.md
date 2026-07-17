@@ -2,6 +2,40 @@
 
 Software Architecture / AI Coding / Design Patterns
 
+## How to Use This Reference
+
+Read this article as a teaching reference, not as a linear essay that must be quoted from top to bottom.
+
+- Read Sections 1 and 2 first when the agent needs the core mindset: why AI Coding increases structural risk, and why variation points matter more than pattern names.
+- Read the pattern chapters in Section 3 when the agent is evaluating concrete candidates such as `Strategy`, `Observer`, or `Facade`.
+- Read Section 4 when the agent needs a fast pattern-choice table before committing to one design direction.
+- Read Section 5 when the agent needs counterexamples, misuse pressure tests, or reasons to reject a pattern-shaped idea.
+- Read Sections 6 and 7 when the agent must explain why a design aligns with framework practice or why the choice matters in the AI era.
+
+## Quick Routing
+
+| If the design question is about... | Read this section first | Then confirm with |
+| --- | --- | --- |
+| Why architecture discipline matters more with AI-generated code | Section 1 | Section 7 |
+| How to identify a real variation point before naming a pattern | Section 2 | Section 4 |
+| Strategy / Observer / Factory Method / Abstract Factory / Singleton | Section 3 pattern chapter | `references/gof-patterns.md` |
+| Adapter / Decorator / Proxy / Template Method / Facade | Section 3 pattern chapter | `references/gof-patterns.md` |
+| Choosing among the ten emphasized patterns | Section 4 | Section 5 |
+| Pressure-testing misuse, over-abstraction, or false sophistication | Section 5 | `references/decision-protocol.md` |
+| Explaining framework fit and long-term maintainability | Sections 6 and 7 | Section 2 |
+
+## Teaching Extraction Checklist
+
+Before turning this article into a design recommendation, extract and restate these points in the agent's own reasoning:
+
+1. What variation point the candidate structure isolates.
+2. What remains stable if that structure is chosen.
+3. What structural cost, lifecycle rule, or dependency rule it introduces.
+4. Which neighboring pattern looks similar and why it is still the wrong choice here.
+5. Which code smell or decay path appears if the pattern is not introduced.
+6. Which misuse or counterexample should disqualify the pattern.
+7. Which framework example or operational check makes the explanation more concrete.
+
 ## Article purpose
 
 If the central difficulty of software development used to be implementing features, the harder challenge now is ensuring that large amounts of rapidly generated code remain evolvable, collaborative, and verifiable. Design patterns are no longer merely interview material or textbook knowledge. In the AI era, they help engineers retain control of structure, boundaries, and change.
@@ -199,7 +233,7 @@ class LightThemeFactory:
 
 **Keywords:** a unique instance, global access, risk of state pollution.
 
-Singleton is one of the most easily misused patterns. It should express a semantically global resource, such as process-level configuration, a registry, or a resource facade. It should not mean, ?I do not want to pass this dependency, so I will make it global.?
+Singleton is one of the most easily misused patterns. It should express a semantically global resource, such as process-level configuration, a registry, or a resource facade. It should not mean, "I do not want to pass this dependency, so I will make it global."
 
 Modern engineering usually prefers a container-managed singleton scope instead of having every business class implement a singleton. Hand-written singletons readily create test pollution, residual state, and unclear concurrency semantics.
 
@@ -397,7 +431,7 @@ The implication for AI Coding is direct: without understanding the structure a f
 
 ## 7. Final judgment: The valuable skill is not writing version one, but surviving version five
 
-Design patterns matter today not simply because they are classics, but because they provide a stable, cross-era set of tools for structural judgment. When AI makes code generation extremely fast, the most valuable human capability is no longer ?I can type this code.? It is ?I know how this code will decay and how to block that decay path from the beginning.?
+Design patterns matter today not simply because they are classics, but because they provide a stable, cross-era set of tools for structural judgment. When AI makes code generation extremely fast, the most valuable human capability is no longer "I can type this code." It is "I know how this code will decay and how to block that decay path from the beginning."
 
 Understanding design patterns is not about making a system resemble a textbook. It is about preserving the essentials of software engineering in the face of AI-generated speed: boundaries, substitution, evolution, testing, and collaboration.
 
