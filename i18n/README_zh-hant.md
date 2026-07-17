@@ -1,41 +1,258 @@
-# Architect
+<div align="center">
 
-Architect ??? agent ?????????????????????????????????????????
+<h1>
+  <img src="../assets/architect-wordmark.svg" alt="Architect" width="520" />
+</h1>
 
-## ?????
+**快速寫程式碼不難。難的是讓程式碼庫在接下來上百次變更後依然站得住。**
 
-## 三階段流程
+*建立會隨著規模成長仍保持一致性的程式碼庫，而不是落入巨型模組、預設性抽象或意外破壞性變更。*
+
+[![Architect Workflow](https://img.shields.io/badge/Architect-design%20-%20propose%20-%20build-111827?style=flat-square)](https://github.com/vortezwohl/Agent-Architect/tree/main/skills/architect-design)
+[![MIT License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](https://github.com/vortezwohl/Agent-Architect/blob/main/LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/vortezwohl/Agent-Architect?style=flat-square&label=Stars)](https://github.com/vortezwohl/Agent-Architect/stargazers)
+
+<br />
+
+**不要讓架構在偶然中形成。** &nbsp; **不要靠臆測引入抽象。** &nbsp; **不要憑假設維護相容性。**
+
+[Why](#為什麼選擇-architect) &middot; [Workflow](#工作流) &middot; [Outputs](#產物) &middot; [Example](#示例體驗) &middot; [Install](#安裝)
+
+</div>
+
+<h4 align="center">
+  <p>
+    <a href="https://github.com/vortezwohl/Agent-Architect/blob/main/README.md">English</a> |
+    <b>&#32321;&#39636;&#20013;&#25991;</b> |
+    <a href="https://github.com/vortezwohl/Agent-Architect/blob/main/i18n/README_zh-hans.md">&#31616;&#20307;&#20013;&#25991;</a> |
+    <a href="https://github.com/vortezwohl/Agent-Architect/blob/main/i18n/README_ja-jp.md">&#26085;&#26412;&#35486;</a>
+  </p>
+</h4>
+
+---
+
+## 為什麼選擇 Architect
+
+多數 coding agent 失敗，並不是因為它們不會寫程式碼。
+
+而是因為它們會在寫程式碼的同時，悄悄做出結構性決策。
+
+一個聽起來很普通的請求：
 
 ```text
-architect-design
--> architect-propose
--> architect-build
+增加第二個支付提供方。
+重構這個服務。
+讓這個功能可擴展。
 ```
 
-### Architect Design
+其實已經強迫你對所有權、邊界、相容性、失敗行為、狀態流、遷移方式和回滾方式做出決策。
 
-Design 階段先確認相容性邊界，再根據儲存庫證據拆分並批准 `D-xxx` 設計單元。每個設計單元必須記錄規範工程概念或模式、選擇依據、替代方案、反例、反模式、設計級 `MUST DO` / `MUST NOT DO` 以及使用者批准證據。
+當這些決策始終保持隱含狀態時，程式碼庫通常會滑向三種代價高昂的狀態之一：
 
-目標不是機械地追求最少抽象，而是在相容性和明確演進範圍內，選擇最容易理解、維護、驗證且有充分依據的結構。
+| Failure | What happens |
+| --- | --- |
+| **Architecture by neglect** | 功能被塞進最近的檔案裡。所有權開始模糊，規則開始複製，一兩個模組不斷吞掉一切。 |
+| **Architecture by speculation** | 還沒有真實變化點時，可能的未來就先被做成介面、工廠、登錄表、事件層或繼承層。 |
+| **Compatibility by assumption** | 在未先把預期邊界說清楚之前，既有行為就被預設保留，或者被預設破壞。 |
 
-### Architect Propose
+Architect 的存在，就是為了在程式碼庫為這些決策付出代價之前，先把它們強制暴露出來。
 
-Propose 只會把已批准設計寫入 `.architect/<plan-name>/`。設計和任務以多份職責單一的 Markdown 文件保存；固定英文欄位、識別碼、時間戳與目錄由程式產生並驗證，正文預設使用使用者提問語言。
+---
 
-靜態設計與任務 Markdown 是唯一合同；可變任務狀態只保存在 `.state/execution-state.json`，避免狀態分散。
+## 工作流
 
-### Architect Build
-
-Build 每次只執行一個 `T-xxx` 原子任務。每個任務必須引用已批准的 `D-xxx`、精確路徑與符號邊界、設計級規則、`MUST DO`、`MUST NOT DO`、範圍外行為與完成條件。
-
-每次原子編輯後都要檢查範圍。越界或中斷時必須完整回退到任務檢查點；新的無記憶 agent 先恢復活躍任務，再從已驗證完成的狀態繼續。
-
-## 使用方式
+Architect 是一個嚴格的**手動三階段流程**：
 
 ```text
-Use $architect-design to define and approve D-xxx design units.
-Use $architect-propose <plan-name> to create and seal the Markdown-first plan.
-Use $architect-build <plan-name> to execute one task with scope checks and rollback.
+architect-design -> architect-propose -> architect-build
 ```
 
-計畫文件必須使用 UTF-8 without BOM。驗證流程拒絕無效 UTF-8、BOM、replacement character、連續異常問號和已知亂碼標記。
+每個階段都有獨立職責，並且會拒絕自動去做下一個階段的工作。
+
+| Stage | Invoke when | Produces | Refuses to do |
+| --- | --- | --- | --- |
+| `architect-design` | 你需要為一次重要變更確定一個經過批准的架構方向。 | 一個經過批准的設計包，其中包含一個或多個 `D-xxx` 子設計。 | 計畫編排、檔案寫入或實作。 |
+| `architect-propose` | 設計包已經獲批，必須轉成可執行包。 | 一個封存好的 `.architect/<plan-name>/` 包，包含 `D-xxx`、`T-xxx`、狀態檔案和日誌產物。 | 重新設計方案或編輯應用程式碼。 |
+| `architect-build` | 封存包已經校驗完畢，準備執行。 | 真實的實作推進、任務狀態更新，以及基於事實的執行日誌。 | 在建置中途重新打開設計，或臨時發明新結構。 |
+
+這就是核心的使用者體驗變化：agent 不再從請求直接跳到程式碼。它必須先把設計批准、計畫封存和有邊界的執行拆開。
+
+---
+
+## 產物
+
+### 1. 已批准的設計包
+
+`architect-design` 會為一個未來計畫包產出一個已批准的設計包。
+
+每個設計包都可以包含多個 `D-xxx` 子設計，並且明確給出意圖、邊界、反例、反模式，以及 `MUST DO` / `MUST NOT DO` 規則。
+
+### 2. 封存的執行包
+
+`architect-propose` 會把該已批准設計包轉換為位於以下目錄中的一個確定性執行包：
+
+```text
+.architect/<plan-name>/
+```
+
+該執行包包含：
+
+```text
+00-plan-manifest.md
+01-context-and-contract.md
+02-design-catalog.md
+03-designs/D-xxx-<slug>.md
+04-impact-and-boundaries.md
+05-task-catalog.md
+06-tasks/T-xxx-<slug>.md
+07-verification-plan.md
+08-execution-log.md
+.state/execution-state.json
+```
+
+這不是一堆筆記，而是建置階段的執行合約。
+
+### 3. 受檢查點控制的建置證據
+
+`architect-build` 會依序執行封存的 `T-xxx` 任務，如實更新任務狀態，追加基於事實的日誌記錄，並把實作嚴格限制在已批准邊界內。
+
+你得到的不只是程式碼。你得到的是程式碼，以及解釋為什麼要改程式碼、實際發生了什麼的決策軌跡、狀態軌跡和執行軌跡。
+
+---
+
+## 示例體驗
+
+```text
+User:
+在不破壞目前結帳流程的前提下，增加第二個支付提供方。
+```
+
+```text
+Stage 1: $architect-design
+- 先讀取儲存庫。
+- 詢問必須保持哪些相容性。
+- 把已被證明的變化點和穩定策略分離開。
+- 產出已批准的 D-xxx 子設計。
+```
+
+```text
+Stage 2: $architect-propose add-payment-provider
+- 建立 .architect/add-payment-provider/
+- 使用儲存庫腳本分配設計文件和任務文件。
+- 封存並校驗執行包。
+```
+
+```text
+Stage 3: $architect-build add-payment-provider
+- 載入封存包和目前執行狀態。
+- 依序執行記錄在案的 T-xxx 任務。
+- 用真實結果更新執行日誌。
+```
+
+差異很直接：
+
+- 一般 coding agent 會直接開始寫程式碼，並把架構決策藏進 diff 裡。
+- Architect 會讓這些決策變得顯式、可批准、可序列化、可執行。
+
+---
+
+## 安裝
+
+### 外掛
+
+#### Codex
+
+```text
+codex plugin marketplace add vortezwohl/Agent-Architect
+codex plugin install architect@architect
+```
+
+#### Claude Code
+
+```text
+/plugin marketplace add vortezwohl/Agent-Architect
+/plugin install architect@architect
+```
+
+安裝完成後請開啟一個新工作階段，這樣 agent 才能發現該外掛。
+
+### 獨立技能
+
+```text
+npx skills add vortezwohl/Agent-Architect
+```
+
+或者把 `skills/` 複製到你的工具支援的 skills 目錄中，然後手動呼叫各階段：
+
+```text
+$architect-design
+$architect-propose <plan-name>
+$architect-build <plan-name>
+```
+
+> [!IMPORTANT]
+> 安裝前先閱讀 skill。這些 skill 編碼了執行規則、包合約和階段邊界。
+
+---
+
+## 正確使用方式
+
+依序使用各階段。
+
+1. 只有在你需要一個經過批准的設計包時，才執行 `architect-design`。
+2. 只有在該設計包已經獲批後，才執行 `architect-propose`。
+3. 只有在生成的執行包已經封存並校驗後，才執行 `architect-build`。
+
+不要從一個大型請求直接跳到 `architect-build`。這個儲存庫是圍繞「已批准設計、封存計畫和有邊界執行的分離」而建立的。
+
+---
+
+## 儲存庫結構
+
+```text
+assets/
+`-- architect-wordmark.svg
+
+skills/
+|-- architect-design/
+|   |-- SKILL.md
+|   |-- agents/openai.yaml
+|   `-- references/
+|       |-- decision-protocol.md
+|       |-- gof-patterns.md
+|       `-- source-article.md
+|-- architect-propose/
+|   |-- SKILL.md
+|   |-- agents/openai.yaml
+|   |-- scripts/
+|   `-- templates/
+`-- architect-build/
+    |-- SKILL.md
+    `-- agents/openai.yaml
+```
+
+公開產品名稱是 **Architect**。
+
+三個可呼叫階段分別是 `architect-design`、`architect-propose` 和 `architect-build`。
+
+---
+
+## 貢獻
+
+貢獻應該強化這套工作流，而不是增加噪音。
+
+好的貢獻通常會改善以下某一項：
+
+- 設計階段的證據門禁；
+- 相容性邊界的清晰度；
+- 封存包的確定性；
+- 建置階段的執行紀律；
+- 回滾、校驗或日誌記錄的準確性。
+
+如果一個改動增加了流程負擔，卻沒有提升上述任一屬性，那它大概率就是錯誤的改動。
+
+---
+
+## 授權
+
+MIT。參見 [LICENSE](../LICENSE)。

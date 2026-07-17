@@ -1,41 +1,258 @@
-# Architect
+<div align="center">
 
-Architect ?????????????????????????????????????????????
+<h1>
+  <img src="../assets/architect-wordmark.svg" alt="Architect" width="520" />
+</h1>
 
-## ??????
+**コードを速く書くことは難しくありません。難しいのは、そのコードベースを次の百回の変更にも耐えさせることです。**
 
-## 三段階の流れ
+*巨大モジュール、先回りした抽象化、意図しない破壊的変更に陥ることなく、成長しても整合性を保つコードベースを構築します。*
+
+[![Architect Workflow](https://img.shields.io/badge/Architect-design%20-%20propose%20-%20build-111827?style=flat-square)](https://github.com/vortezwohl/Agent-Architect/tree/main/skills/architect-design)
+[![MIT License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](https://github.com/vortezwohl/Agent-Architect/blob/main/LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/vortezwohl/Agent-Architect?style=flat-square&label=Stars)](https://github.com/vortezwohl/Agent-Architect/stargazers)
+
+<br />
+
+**偶然に任せてアーキテクチャを作らない。** &nbsp; **推測で抽象化しない。** &nbsp; **互換性を思い込みで扱わない。**
+
+[Why](#なぜ-architect-なのか) &middot; [Workflow](#ワークフロー) &middot; [Outputs](#成果物) &middot; [Example](#利用イメージ) &middot; [Install](#インストール)
+
+</div>
+
+<h4 align="center">
+  <p>
+    <a href="https://github.com/vortezwohl/Agent-Architect/blob/main/README.md">English</a> |
+    <a href="https://github.com/vortezwohl/Agent-Architect/blob/main/i18n/README_zh-hant.md">&#32321;&#39636;&#20013;&#25991;</a> |
+    <a href="https://github.com/vortezwohl/Agent-Architect/blob/main/i18n/README_zh-hans.md">&#31616;&#20307;&#20013;&#25991;</a> |
+    <b>&#26085;&#26412;&#35486;</b>
+  </p>
+</h4>
+
+---
+
+## なぜ Architect なのか
+
+多くの coding agent が失敗するのは、コードを書けないからではありません。
+
+コードを書きながら、構造上の意思決定を黙って進めてしまうからです。
+
+一見すると普通の依頼でも、
 
 ```text
-architect-design
--> architect-propose
--> architect-build
+2 つ目の決済プロバイダを追加する。
+このサービスをリファクタリングする。
+この機能を拡張可能にする。
 ```
 
-### Architect Design
+すでに所有権、境界、互換性、失敗時の挙動、状態遷移、移行、ロールバックに関する判断を迫っています。
 
-Design は互換性の境界を確認してから、リポジトリの証拠に基づく `D-xxx` 設計単位を定義し、利用者の承認を得ます。各設計単位には、標準的な設計概念またはパターン、根拠、代替案、反例、アンチパターン、設計レベルの `MUST DO` / `MUST NOT DO`、承認証拠が必要です。
+こうした判断が暗黙のままだと、コードベースはたいてい次の 3 つの高コストな状態のどれかに流れていきます。
 
-目的は最小の抽象化を機械的に選ぶことではありません。互換性と明示された進化範囲の中で、最も理解しやすく、保守・検証しやすく、根拠のある構造を選びます。
+| Failure | What happens |
+| --- | --- |
+| **Architecture by neglect** | 機能は一番近いファイルに押し込まれます。責務の所在が曖昧になり、ルールが重複し、1 つか 2 つのモジュールがすべてを吸い込みます。 |
+| **Architecture by speculation** | 実際の変化点が存在しないうちから、あり得る未来のためにインターフェース、ファクトリ、レジストリ、イベント層、継承層が作られます。 |
+| **Compatibility by assumption** | 意図した境界を明示しないまま、既存の挙動が守られることも壊されることも前提扱いされます。 |
 
-### Architect Propose
+Architect は、コードベースがその代償を払う前に、そうした判断を必ず表に出させるために存在します。
 
-Propose は承認済み設計だけを `.architect/<plan-name>/` に記録します。設計とタスクは責務が一つずつの Markdown ファイルに分割されます。固定の英語フィールド、識別子、タイムスタンプ、ディレクトリはプログラムが作成・検証し、本文は既定で利用者の質問言語を使います。
+---
 
-静的な設計・タスク Markdown が唯一の契約です。可変のタスク状態は `.state/execution-state.json` のみに保存します。
+## ワークフロー
 
-### Architect Build
-
-Build は一度に一つの `T-xxx` 原子的タスクだけを実行します。タスクは承認済み `D-xxx`、正確なパスとシンボル境界、設計ルール、`MUST DO`、`MUST NOT DO`、範囲外の変更、完了条件を参照しなければなりません。
-
-原子的な編集ごとに範囲を確認します。境界違反または中断時は、必ずタスクのチェックポイントへ完全にロールバックします。記憶を持たない新しい agent は、まず進行中のタスクを回復してから、検証済みの状態から再開します。
-
-## 使用方法
+Architect は厳格な**手動の 3 段階フロー**です。
 
 ```text
-Use $architect-design to define and approve D-xxx design units.
-Use $architect-propose <plan-name> to create and seal the Markdown-first plan.
-Use $architect-build <plan-name> to execute one task with scope checks and rollback.
+architect-design -> architect-propose -> architect-build
 ```
 
-計画ファイルは UTF-8 without BOM でなければなりません。検証は不正な UTF-8、BOM、replacement character、連続した異常な疑問符、既知の文字化けマーカーを拒否します。
+各段階には独立した責務があり、自動で次の段階の仕事を引き受けることはありません。
+
+| Stage | Invoke when | Produces | Refuses to do |
+| --- | --- | --- | --- |
+| `architect-design` | 影響の大きい変更に対して、承認済みのアーキテクチャ方針を 1 つ定めたいとき。 | 1 つ以上の `D-xxx` サブデザインを含む、承認済みの設計バンドル。 | 計画化、ファイル書き込み、実装。 |
+| `architect-propose` | 設計バンドルがすでに承認され、実行可能なパッケージに変換する必要があるとき。 | `D-xxx`、`T-xxx`、状態、ログ成果物を含む、封印済みの `.architect/<plan-name>/` パッケージ。 | 解決策の再設計やアプリコードの編集。 |
+| `architect-build` | 封印済みパッケージが検証を終え、実行準備ができているとき。 | 実際の実装進行、タスク状態更新、事実ベースの実行ログ。 | 設計の再オープンや、ビルド途中での新しい構造の持ち込み。 |
+
+ここがユーザー体験の核心です。agent は依頼から直接コードへ飛びません。まず、設計承認、計画の封印、境界付きの実行を切り分けなければなりません。
+
+---
+
+## 成果物
+
+### 1. 承認済み設計バンドル
+
+`architect-design` は、将来の 1 つの計画パッケージに対して 1 つの承認済みバンドルを生成します。
+
+各バンドルには複数の `D-xxx` サブデザインを含めることができ、意図、境界、反例、アンチパターン、`MUST DO` / `MUST NOT DO` ルールを明示します。
+
+### 2. 封印済み実行パッケージ
+
+`architect-propose` は、その承認済みバンドルを次の場所にある決定的なパッケージへ変換します。
+
+```text
+.architect/<plan-name>/
+```
+
+パッケージには次が含まれます。
+
+```text
+00-plan-manifest.md
+01-context-and-contract.md
+02-design-catalog.md
+03-designs/D-xxx-<slug>.md
+04-impact-and-boundaries.md
+05-task-catalog.md
+06-tasks/T-xxx-<slug>.md
+07-verification-plan.md
+08-execution-log.md
+.state/execution-state.json
+```
+
+これは単なるメモではありません。ビルド段階の実行契約です。
+
+### 3. チェックポイント制御されたビルド証跡
+
+`architect-build` は封印された `T-xxx` タスクを順番に実行し、タスク状態を正直に更新し、事実ベースのログを追記し、実装を承認済み境界の内側に保ちます。
+
+得られるのはコードだけではありません。なぜそのコードが変わったのか、実際に何が起きたのかを説明できる、意思決定の軌跡、状態の軌跡、実行の軌跡も得られます。
+
+---
+
+## 利用イメージ
+
+```text
+User:
+現在のチェックアウトフローを壊さずに、2 つ目の決済プロバイダを追加する。
+```
+
+```text
+Stage 1: $architect-design
+- まずリポジトリを読む。
+- どの互換性を維持すべきか確認する。
+- 実証済みの変化点と安定した方針を分離する。
+- 承認済みの D-xxx サブデザインを作る。
+```
+
+```text
+Stage 2: $architect-propose add-payment-provider
+- .architect/add-payment-provider/ を作成する。
+- リポジトリのスクリプトで設計文書とタスク文書を割り当てる。
+- パッケージを封印して検証する。
+```
+
+```text
+Stage 3: $architect-build add-payment-provider
+- 封印済みパッケージと現在の実行状態を読み込む。
+- 記録された T-xxx タスクを順に実行する。
+- 実際の結果で実行ログを更新する。
+```
+
+違いは明快です。
+
+- 通常の coding agent はすぐに実装を始め、アーキテクチャ上の判断を diff の中に隠します。
+- Architect は、その判断を明示し、承認可能にし、直列化し、実行可能にします。
+
+---
+
+## インストール
+
+### プラグイン
+
+#### Codex
+
+```text
+codex plugin marketplace add vortezwohl/Agent-Architect
+codex plugin install architect@architect
+```
+
+#### Claude Code
+
+```text
+/plugin marketplace add vortezwohl/Agent-Architect
+/plugin install architect@architect
+```
+
+インストール後は新しいセッションを開始してください。そうしないと agent がプラグインを認識できません。
+
+### スタンドアロンスキル
+
+```text
+npx skills add vortezwohl/Agent-Architect
+```
+
+または `skills/` を利用中ツールの対応 skills ディレクトリにコピーし、各段階を手動で呼び出します。
+
+```text
+$architect-design
+$architect-propose <plan-name>
+$architect-build <plan-name>
+```
+
+> [!IMPORTANT]
+> インストール前に skill を読んでください。これらの skill には、実行ルール、パッケージ契約、段階境界が埋め込まれています。
+
+---
+
+## 正しい使い方
+
+段階を順番に使ってください。
+
+1. `architect-design` は、承認済み設計バンドルが必要なときだけ実行します。
+2. `architect-propose` は、そのバンドルが承認された後にだけ実行します。
+3. `architect-build` は、生成されたパッケージが封印され、検証された後にだけ実行します。
+
+大きな依頼から直接 `architect-build` へ飛ばないでください。このリポジトリは、承認済み設計、封印済み計画、境界付き実行の分離を前提に構築されています。
+
+---
+
+## リポジトリ構成
+
+```text
+assets/
+`-- architect-wordmark.svg
+
+skills/
+|-- architect-design/
+|   |-- SKILL.md
+|   |-- agents/openai.yaml
+|   `-- references/
+|       |-- decision-protocol.md
+|       |-- gof-patterns.md
+|       `-- source-article.md
+|-- architect-propose/
+|   |-- SKILL.md
+|   |-- agents/openai.yaml
+|   |-- scripts/
+|   `-- templates/
+`-- architect-build/
+    |-- SKILL.md
+    `-- agents/openai.yaml
+```
+
+公開されている製品名は **Architect** です。
+
+呼び出せる 3 つの段階は `architect-design`、`architect-propose`、`architect-build` です。
+
+---
+
+## コントリビュート
+
+コントリビューションは、このワークフローを強くするものであるべきで、ノイズを増やすものであってはいけません。
+
+よい変更は、たいてい次のどれかを改善します。
+
+- 設計段階の証拠ゲート。
+- 互換性境界の明確さ。
+- 封印済みパッケージの決定性。
+- ビルド段階の実行規律。
+- ロールバック、検証、ログ記録の正確さ。
+
+これらの性質をどれも改善しないまま手順だけを増やす変更は、おそらく誤った変更です。
+
+---
+
+## ライセンス
+
+MIT。詳細は [LICENSE](../LICENSE) を参照してください。
