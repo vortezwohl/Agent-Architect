@@ -1,4 +1,4 @@
 interface:
   display_name: "Architect Propose"
-  short_description: "Create a sealed Markdown-first implementation contract"
-  default_prompt: "Use $architect-propose to turn approved D-xxx design units into a sealed Markdown-first plan package with atomic T-xxx tasks and centralized execution state."
+  short_description: "Manual-only: seal an approved plan package"
+  default_prompt: "Run only when the user explicitly invokes $architect-propose. Turn an already approved D-xxx design bundle into a sealed package under .architect/. Do not auto-invoke $architect-build."

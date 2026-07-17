@@ -1,69 +1,95 @@
 ---
 name: architect-design
-description: "Investigate consequential changes, study the relevant architecture references, define explicit design units with recognized engineering concepts, record design-level constraints and anti-patterns, and obtain user approval before a plan is created. Use for features, refactors, integrations, and structural changes that affect boundaries, dependencies, state, lifecycle, compatibility, or future evolution."
+description: "Manual-only skill. Use only when the user explicitly invokes the architect-design skill to produce an architecture decision bundle before any plan package exists. Do not auto-trigger from a generic feature, refactor, integration, or implementation request."
 ---
 
 # Architect Design
 
-Teach the agent before constraining the agent. Use this skill as both a learning guide and a decision protocol: study the relevant references first, then produce bounded design units that later stages can execute safely.
+Use this skill only as a manually selected architecture decision stage. Its job
+is to teach and constrain one design decision bundle, not to plan tasks, modify
+files, or invoke sibling skills automatically.
 
-Design the most justified architecture for the stated compatibility boundary and evolution horizon. Do not optimize for the fewest files or abstractions by default. Complexity remains an explicit cost, but a direct implementation wins only when it is also the clearest, most maintainable, and best-supported option.
+## Manual Invocation Only
 
-`architect-design` is the decision stage of a strict three-stage workflow:
+- Run this skill only when the user explicitly asks for `architect-design`.
+- Do not auto-switch into `architect-propose` or `architect-build`.
+- If the next step needs planning or implementation, stop and tell the user
+  which skill to invoke manually.
 
-1. `architect-design` investigates, learns, and obtains approval for design units.
-2. `architect-propose` records only approved design units as a plan package.
-3. `architect-build` executes only the sealed package, one atomic task at a time.
+## Core Outcome
 
-## Core Responsibilities
+Produce an approved, bounded design bundle that another agent can inspect
+without guessing:
 
-- Learn the architecture method before proposing structure or naming a pattern.
-- Learn the intent, collaborators, lifecycle, and failure modes of relevant concepts before turning them into design rules.
-- Teach the user and the next agent why the chosen concept fits better than the direct and adjacent alternatives.
-- Constrain later stages with approved design units, boundaries, anti-patterns, and design-level rules while remaining read-only in Design.
+- resolve compatibility intent before repository inspection;
+- study the required references before naming a concept or pattern;
+- inspect only the repository evidence needed for the current decision;
+- compare the direct design with the best adjacent alternatives;
+- define explicit `D-xxx` design units with boundaries, counterexamples,
+  anti-patterns, and design rules;
+- obtain explicit user approval for the displayed design bundle.
 
 ## Strict Boundary
 
-- Design is a read-only stage. Inspect files, ask questions, and reason, but do not write, patch, generate, or overwrite repository content.
-- Do not create a plan package or edit any file, including implementation, tests, configuration, documentation, skill artifacts, or generated files.
+- Design is read-only. Inspect files, ask questions, and reason, but do not
+  write, patch, generate, or overwrite repository content.
+- Do not create a plan package or implementation task.
 - Do not convert an unapproved assumption into a design unit.
 - Do not let silence count as approval.
-- Do not continue to Propose after unresolved design detail, missing approval, or an unnamed engineering concept.
-- Do not use a pattern because its class diagram resembles the problem.
-- Do not skip the reference-reading and teaching steps because a pattern name feels familiar.
+- Do not continue while compatibility intent, design detail, or approval
+  coverage remains unresolved.
+- Do not use a pattern because its shape looks familiar.
 
-## Learning-First Protocol
+## Working Sequence
 
-1. Classify the request only far enough to determine whether architecture design is needed. Do not inspect the repository during classification.
-2. Read `references/decision-protocol.md` before asking the user anything. At this point, use only Gate 0; do not inspect the repository or make a design decision.
-3. Apply the compatibility-intent gate before repository inspection when a contract, state, configuration, integration, or extension point may change.
-4. Read `references/source-article.md` before the first design decision. Treat it as the primary teaching source for methodology, examples, misuse warnings, and pattern framing.
-5. Read the relevant entries in `references/gof-patterns.md` before choosing, rejecting, comparing, or reviewing a GoF pattern. Read adjacent candidates together when confusion is plausible.
-6. Carry forward what the references teach. Before locking a design unit, explain the stable core, the real variation, the lifecycle or collaboration model, the expected failure mode, and why the concept fits better than the direct or adjacent alternatives.
-7. Inspect repository evidence only after the compatibility boundary is known: callers, tests, ownership, dependencies, lifecycle, state, failures, transactions, concurrency, framework constraints, and operational risk.
-8. Define an explicit evolution horizon. It must name evidence-backed future changes or state that no such evidence exists; imagined extensibility is not evidence.
-9. Compare the direct alternative with architectural alternatives using maintainability, comprehensibility, responsibility ownership, dependency direction, verifiability, operational risk, compatibility, and complexity.
-10. Split the approved solution into independently understandable design units: `D-001`, `D-002`, and so on. A design unit owns one architectural decision.
-11. For every design unit, name a recognized software engineering concept or pattern. Record its canonical name, category, and a reliable reference. A justified direct design must name its engineering concept as well.
-12. Record concrete counterexamples, anti-patterns, design boundaries, and design-level `MUST DO` / `MUST NOT DO` rules for every design unit.
-13. Present the complete design bundle and obtain unambiguous user approval for the covered `D-xxx` identifiers. A user instruction to proceed is valid only when it clearly refers to the displayed bundle; silence is never approval.
-14. Produce a design bundle digest and hand off only the approved design text, approval evidence, objective, non-goals, compatibility boundary, risks, and required validation categories to `architect-propose`.
+1. Classify the request only far enough to decide whether architecture design
+   is needed. Do not inspect the repository yet.
+2. Read `references/decision-protocol.md` and apply Gate 0 before repository
+   inspection when contracts, state, configuration, integrations, or extension
+   points may change.
+3. Read `references/source-article.md` before the first design decision.
+4. Read the relevant entries in `references/gof-patterns.md` before choosing,
+   rejecting, or comparing a GoF pattern. Read neighboring candidates together
+   when confusion is plausible.
+5. Inspect repository evidence only after the compatibility boundary is known:
+   callers, tests, ownership, dependencies, lifecycle, state, failures,
+   transactions, concurrency, framework constraints, and operational risk.
+6. Define the compatibility boundary, evolution horizon, real variation,
+   stable core, collaborators, lifecycle, and likely failure mode from
+   evidence, not imagination.
+7. Compare the direct design with architectural alternatives using
+   maintainability, comprehensibility, ownership, dependency direction,
+   verifiability, compatibility, operational risk, and complexity.
+8. Split the approved solution into independently understandable `D-xxx`
+   design units. One unit owns one architectural decision.
+9. For every design unit, record a recognized engineering concept or pattern,
+   canonical name, category, reliable reference, counterexamples,
+   anti-patterns, design boundaries, and design-level `MUST DO` / `MUST NOT
+   DO` rules.
+10. Present the complete design bundle and obtain explicit user approval for
+    the displayed `D-xxx` identifiers.
 
 ## Teaching Standard
 
-Before approval, make the design response teach at least these points for each non-trivial decision:
+Before asking for approval, explain for every non-trivial decision:
 
-- What problem the chosen concept solves in this specific context.
-- What remains stable and what changes independently.
-- Which simpler direct design was considered and why it was accepted or rejected.
-- Which adjacent pattern, abstraction, or workflow was rejected and why.
-- Which counterexample or misuse would signal that the concept is a poor fit.
+- what concrete problem the chosen concept solves here;
+- what remains stable and what changes independently;
+- which simpler direct design was considered and why it was accepted or
+  rejected;
+- which adjacent pattern or abstraction was rejected and why;
+- which misuse, counterexample, or operational failure would make the concept a
+  poor fit;
+- which validation boundary Build must later preserve.
 
-Do not treat the references as citation cargo. Convert them into concrete reasoning that another agent can follow and reapply.
+Do not cite the references mechanically. Convert them into reasoning that the
+next agent can reapply.
 
 ## Design Unit Contract
 
-Every design unit must contain the following fixed English fields. Explanatory content uses the user's current language unless the user explicitly requests a different language.
+Every design unit must contain the following fixed English fields. Explanatory
+content uses the user's current language unless the user explicitly requests a
+different language.
 
 ```md
 # Design: D-001-<slug>
@@ -85,18 +111,10 @@ Every design unit must contain the following fixed English fields. Explanatory c
 ### MUST NOT DO
 ```
 
-Rules must constrain design details, not merely outcomes. Good rules define ownership, dependency direction, lifecycle authority, state transitions, contract mapping, error behavior, transaction boundaries, or framework usage.
-
-## Approval and Handoff Gate
-
-Do not hand off when any design unit is missing approval evidence, a canonical concept, a counterexample, an anti-pattern, a boundary, or a design rule. A later implementation detail that requires a new architectural judgment is a return to Design, not an opportunity for Propose or Build to improvise.
-
-## Reference Map
-
-- `references/decision-protocol.md`: Binding compatibility-intent and approval gates, diagnostic questions, selection matrix, and anti-pattern controls.
-- `references/source-article.md`: Primary teaching article for methodology, examples, misuse warnings, framework mappings, and bibliography.
-- `references/gof-patterns.md`: GoF catalog covering intent, collaboration, trade-offs, neighboring patterns, misuse, and verification.
+Rules must constrain implementation details, not merely desired outcomes.
 
 ## Completion Standard
 
-Finish only when the user can inspect the approved design bundle, understand what the agent learned from the references, identify why each concept was selected over its alternatives, see exactly what must and must not be built, and decide whether to stop or invoke `$architect-propose`.
+Finish only when the user can inspect the approved design bundle, understand
+why each concept beat its alternatives, and decide whether to stop or manually
+invoke the architect-propose skill.

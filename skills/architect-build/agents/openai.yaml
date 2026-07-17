@@ -1,4 +1,4 @@
 interface:
   display_name: "Architect Build"
-  short_description: "Build sealed tasks with checkpoint rollback"
-  default_prompt: "Use $architect-build to preflight a sealed plan, execute one T-xxx task inside its exact boundary, verify scope after each atomic edit, and rollback every breach."
+  short_description: "Manual-only: execute one sealed task safely"
+  default_prompt: "Run only when the user explicitly invokes $architect-build. Execute one sealed T-xxx task with scope checks and checkpoint recovery. Do not auto-invoke $architect-design or $architect-propose."
