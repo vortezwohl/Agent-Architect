@@ -1,16 +1,28 @@
-# Source article: Architecture Is the Core Competitive Advantage in the AI Coding Era
+# Source article: Structural Judgment Becomes More Valuable in the AI Coding Era
 
 Software Architecture / AI Coding / Design Patterns
 
+## Purpose of This Reference
+
+Use this file as the first-principles teaching companion for `architect-design`.
+It is not a replacement for `references/gof-patterns.md`.
+
+- Use this file to explain why AI Coding amplifies structural risk, why variation points matter more than pattern labels, and how design judgment should be taught before implementation begins.
+- Use `references/gof-patterns.md` to compare the full GoF 23-pattern catalog once a pattern-shaped seam has been identified.
+- Use `references/decision-protocol.md` to control approval, scope, and design-stage rigor.
+
+This reference is derived from the updated article that now covers the full GoF catalog rather than a highlighted subset of ten patterns. Its role inside the skill is to provide framing, routing logic, teaching checkpoints, and architecture-facing interpretation of that article.
+
 ## How to Use This Reference
 
-Read this article as a teaching reference, not as a linear essay that must be quoted from top to bottom.
+Read this article as a design-teaching source, not as a linear essay that must be quoted from top to bottom.
 
 - Read Sections 1 and 2 first when the agent needs the core mindset: why AI Coding increases structural risk, and why variation points matter more than pattern names.
-- Read the pattern chapters in Section 3 when the agent is evaluating concrete candidates such as `Strategy`, `Observer`, or `Facade`.
-- Read Section 4 when the agent needs a fast pattern-choice table before committing to one design direction.
-- Read Section 5 when the agent needs counterexamples, misuse pressure tests, or reasons to reject a pattern-shaped idea.
-- Read Sections 6 and 7 when the agent must explain why a design aligns with framework practice or why the choice matters in the AI era.
+- Read Section 3 when the agent needs the global GoF frame: 5 creational, 7 structural, and 11 behavioral patterns as a complete comparison space.
+- Read Section 4 when the agent needs fast routing from a concrete design question to candidate patterns and rejected neighbors.
+- Read Section 5 when the agent needs misuse pressure tests, anti-pattern warnings, or reasons to reject a pattern-shaped idea.
+- Read Section 6 when the agent must explain why a design aligns with framework practice rather than only textbook theory.
+- Read Section 7 before final recommendation, so the design bundle states why structural judgment is the real objective in the AI era.
 
 ## Quick Routing
 
@@ -18,453 +30,255 @@ Read this article as a teaching reference, not as a linear essay that must be qu
 | --- | --- | --- |
 | Why architecture discipline matters more with AI-generated code | Section 1 | Section 7 |
 | How to identify a real variation point before naming a pattern | Section 2 | Section 4 |
-| Strategy / Observer / Factory Method / Abstract Factory / Singleton | Section 3 pattern chapter | `references/gof-patterns.md` |
-| Adapter / Decorator / Proxy / Template Method / Facade | Section 3 pattern chapter | `references/gof-patterns.md` |
-| Choosing among the ten emphasized patterns | Section 4 | Section 5 |
+| How the complete GoF catalog should be grouped and interpreted | Section 3 | `references/gof-patterns.md` |
+| Choosing among adjacent candidate patterns | Section 4 | `references/gof-patterns.md` |
 | Pressure-testing misuse, over-abstraction, or false sophistication | Section 5 | `references/decision-protocol.md` |
-| Explaining framework fit and long-term maintainability | Sections 6 and 7 | Section 2 |
+| Explaining framework fit and long-term maintainability | Section 6 | Section 2 |
+| Explaining why the recommendation is about structure, not memorization | Section 7 | Section 1 |
 
 ## Teaching Extraction Checklist
 
 Before turning this article into a design recommendation, extract and restate these points in the agent's own reasoning:
 
-1. What variation point the candidate structure isolates.
+1. What real variation point the candidate structure isolates.
 2. What remains stable if that structure is chosen.
-3. What structural cost, lifecycle rule, or dependency rule it introduces.
+3. What structural cost, lifecycle rule, dependency rule, or verification seam it introduces.
 4. Which neighboring pattern looks similar and why it is still the wrong choice here.
-5. Which code smell or decay path appears if the pattern is not introduced.
-6. Which misuse or counterexample should disqualify the pattern.
-7. Which framework example or operational check makes the explanation more concrete.
-
-## Article purpose
-
-If the central difficulty of software development used to be implementing features, the harder challenge now is ensuring that large amounts of rapidly generated code remain evolvable, collaborative, and verifiable. Design patterns are no longer merely interview material or textbook knowledge. In the AI era, they help engineers retain control of structure, boundaries, and change.
-
-### What this article covers
-
-It explains, from principles to practice, why ten design patterns matter more in the AI Coding era.
-
-### How it approaches the topic
-
-For each pattern, it covers the variation point, structural intent, suitable scenarios, counterexamples or risks, framework examples, and a Python demonstration.
-
-### Why this approach matters
-
-The critical skill today is not memorizing definitions. It is making sound structural decisions when AI generates code.
+5. Which decay path appears if the pattern is not introduced.
+6. Which misuse signal or counterexample should disqualify the pattern.
+7. Which framework example or operational check makes the explanation concrete.
+8. Whether the globally best design actually uses a GoF pattern, multiple GoF patterns, or no GoF pattern at all.
 
 ## 1. Why AI Coding increases the need for design patterns
 
-Many people assume that design patterns matter less because AI can generate substantial amounts of code. The opposite is true. AI makes implementation cheap while multiplying the cost of structural mistakes. When a developer used to write dozens of branches by hand, the coding process itself could reveal that a system was losing control. A model can now generate hundreds of seemingly reasonable lines in seconds. Without pattern-based judgment, a system reaches an unmaintainable state more quickly.
+AI does not eliminate the need for architecture. It changes where the cost sits.
+Implementation used to be expensive and structural mistakes were discovered gradually while humans typed. AI makes the first version of code cheap and fast, which means structural mistakes can now spread through a codebase before anyone has finished evaluating the first abstraction.
 
-Design patterns are not elegant class diagrams. They are compressed engineering knowledge about recurring structures of change. They address deeper questions: what is changing, who should know about that change, how should it be isolated, how should the system be tested, and how can a team limit the impact of changes?
+The core risk is not "the model writes bad syntax." The deeper risk is that the model replicates the wrong boundary, wrong ownership rule, wrong dependency direction, or wrong extension seam many times in a short period.
 
-| Common AI Coding problem | Typical manifestation | Missing structural judgment | Patterns that help |
+Design patterns matter in this environment not because they make code elegant, but because they compress hard-won structural judgment into reusable questions:
+
+- What is actually changing?
+- Who should know that change exists?
+- Where should the dependency stop?
+- Which part must remain replaceable?
+- Which seam must later be verified?
+
+A useful way to teach the article is to show how common AI-era failures map to missing structural judgment:
+
+| Common AI Coding problem | Typical manifestation | Missing judgment | Pattern families that often help |
 | --- | --- | --- | --- |
-| Features become increasingly chaotic | Every new request adds another branch | The variation in an algorithm or process is not recognized | `Strategy`, `Template Method` |
-| Dependencies spread horizontally | Concrete objects are instantiated everywhere | Creation is not separated from use | `Factory Method`, `Abstract Factory` |
-| Cross-cutting logic becomes uncontrolled | Logging, caching, and authorization are scattered | Enhancement or control is not collected at a boundary | `Decorator`, `Proxy`, `Facade` |
+| Feature growth becomes chaotic | Every request adds another branch | Algorithm or process variation is not recognized | `Strategy`, `Template Method`, `State` |
+| Dependencies spread sideways | Concrete classes are instantiated everywhere | Creation is not separated from use | `Factory Method`, `Abstract Factory`, `Builder` |
+| Cross-cutting rules scatter | Logging, caching, retries, auth, and metrics appear in many places | Enhancement or control is not collected at a boundary | `Decorator`, `Proxy`, `Facade` |
+| Legacy pressure distorts new code | New modules directly absorb old API quirks | Interface incompatibility is not isolated | `Adapter`, sometimes `Bridge` |
+| Coordination logic becomes unreadable | One flow knows too many peers or steps | Orchestration and collaboration boundaries are unclear | `Facade`, `Mediator`, `Observer`, `Chain of Responsibility` |
 
-A sharper formulation is this:
-
-> In the AI Coding era, design patterns matter not because they make code prettier, but because they prevent a model from rapidly copying an incorrect structure dozens of times.
+The shortest useful restatement is this: AI makes code abundant, so structure becomes the scarce asset.
 
 ## 2. Understand variation points before pattern definitions
 
-Most textbooks begin with definitions. Engineering practice benefits from the reverse order: identify the variation point first, then choose the structure. You truly understand a pattern only when you can answer these five questions:
+The article reverses the usual teaching order. Engineering practice improves when the agent identifies the variation point before naming the pattern.
 
-1. What kind of variation does this pattern isolate: an algorithm, a creation process, a notification path, or access control?
-2. What structural cost does it introduce: interfaces, object families, a proxy layer, or an inheritance hierarchy?
-3. Where is its boundary with neighboring patterns, such as Decorator versus Proxy or Factory Method versus Abstract Factory?
-4. How does it appear in modern frameworks: explicit class hierarchies, configuration, containers, callbacks, or decorator syntax?
-5. What code smell is likely without it: a conditional swamp, duplicated orchestration, global-state pollution, or coupling diffusion?
+A pattern should be treated as a response to a specific kind of change:
 
-The central principle of this article is:
+- an algorithm varies;
+- a lifecycle state changes behavior;
+- one compatible object family must switch as a unit;
+- a legacy interface needs translation;
+- a request must be routed through optional handlers;
+- one fact must fan out to many responders;
+- an operation must survive beyond the current stack frame;
+- a stable structure keeps receiving new operations.
 
-> Design patterns are not a priori religion. They are tools for managing change. Expertise is not applying patterns everywhere; it is knowing whether a real variation exists and which pattern fits it.
+You do not truly understand a pattern unless you can answer these questions:
 
-## 3. Panorama of the ten patterns
+1. What kind of variation does this pattern isolate?
+2. What structural cost does it introduce?
+3. Which neighboring pattern looks similar?
+4. Why is that neighboring pattern still wrong here?
+5. What decay path is likely if no structure is introduced?
 
-### Creational patterns
+This is the article's central principle:
 
-These patterns concern how objects are created and how creation decisions are moved away from users.
+Design patterns are not a priori religion. They are tools for managing change. High-level judgment is not applying patterns everywhere; it is recognizing whether a real variation exists and which structure best fits it.
 
-`Factory Method` / `Abstract Factory` / `Singleton`
+## 3. Full GoF panorama: the complete comparison space matters
 
-### Structural patterns
+The updated article no longer teaches only a highlighted subset. It reframes GoF as the full canonical catalog of 23 patterns: 5 creational, 7 structural, and 11 behavioral.
 
-These patterns concern how objects are organized, wrapped, adapted, enhanced, and simplified.
+### Why the full catalog matters
 
-`Adapter` / `Decorator` / `Proxy` / `Facade`
+If the agent only remembers a small common subset, it will overfit problems toward familiar answers such as `Strategy`, `Observer`, `Factory Method`, or `Facade`. Full-catalog literacy matters because architectural mistakes often begin as category mistakes:
 
-### Behavioral patterns
+- a state problem is misread as a strategy problem;
+- a translation problem is misread as a proxy problem;
+- a family-consistency problem is misread as a builder problem;
+- a peer-coordination problem is misread as a facade problem;
+- a tree-structure problem is misread as a visitor problem.
 
-These patterns concern how responsibilities flow, algorithms are replaced, events propagate, and processes are fixed.
+### The three category questions
 
-`Strategy` / `Observer` / `Template Method`
+Teach the three GoF groups through the question each group answers.
 
-### Additional meaning in the AI era
+| Category | Core question | Patterns |
+| --- | --- | --- |
+| Creational | Who decides what gets created, when, and under which invariants? | `Abstract Factory`, `Builder`, `Factory Method`, `Prototype`, `Singleton` |
+| Structural | How should objects connect so that compatibility, access, composition, and enhancement stay under control? | `Adapter`, `Bridge`, `Composite`, `Decorator`, `Facade`, `Flyweight`, `Proxy` |
+| Behavioral | How should behavior flow, switch, notify, persist, interpret, or traverse without collapsing into branch soup? | `Chain of Responsibility`, `Command`, `Interpreter`, `Iterator`, `Mediator`, `Memento`, `Observer`, `State`, `Strategy`, `Template Method`, `Visitor` |
 
-All of these patterns draw boundaries for a model, so that the freedom of generated code does not directly become a structural disaster.
+### First-principles reading of the catalog
 
-### Strategy: Extract changing algorithms from the main process
+The article's updated interpretation is not "memorize 23 names." It is:
 
-**Keywords:** algorithm family, runtime substitution, avoiding a conditional swamp.
+- Creational patterns manage creation decisions, lifecycle seams, and construction invariants.
+- Structural patterns manage boundaries between objects: translation, control, composition, simplification, indirection, and sharing.
+- Behavioral patterns manage how logic changes over time: by algorithm, state, process step, observer set, handler chain, command lifetime, grammar, traversal, or operation set.
 
-The essence of Strategy is recognizing that an algorithm is itself a variation point. Discounting, routing, sorting, retrieval, risk-control, and review rules have a common property: the goal remains the same while the implementation changes frequently. If the main process keeps accumulating `if / elif / else` branches, the code soon becomes a conditional swamp.
+### Use the full catalog, but do not force it
 
-Strategy is especially valuable in AI Coding because a model is very good at adding one more branch for every new requirement but does not naturally identify those branches as replaceable algorithms behind one interface. Whether a strategy interface is extracted from a cluster of similar conditions often determines whether a system stays extensible or becomes rigid after its third or fourth iteration.
+The article still insists on restraint. Full GoF coverage does not mean every design should become a pattern exercise. The skill must compare against:
 
-- **Suitable for:** pricing, sorting, scheduling, recommendation, rule matching, and review.
-- **Not suitable for:** simple logic with only two stable branches that are unlikely to expand.
-- **Framework perspective:** much of Spring's interface-oriented resource access and strategy substitution maps naturally to this idea. [[3]](#ref-3)
+- a direct design,
+- the nearest GoF neighbors,
+- and the possibility that no GoF pattern is the best answer.
 
-```
-from abc import ABC, abstractmethod
+## 4. How to choose among the 23 patterns
 
+The updated article turns pattern choice into a routing exercise from a real design problem to a candidate set.
 
-class PricingStrategy(ABC):
-    @abstractmethod
-    def price(self, amount: float) -> float:
-        raise NotImplementedError
-
-
-class PercentageDiscount(PricingStrategy):
-    def __init__(self, percent: float) -> None:
-        self.percent = percent
-
-    def price(self, amount: float) -> float:
-        return round(amount * (1 - self.percent), 2)
-
-
-class Checkout:
-    def __init__(self, strategy: PricingStrategy) -> None:
-        self.strategy = strategy
-
-    def total(self, amount: float) -> float:
-        return self.strategy.price(amount)
-```
-
-### Observer: Separate what happened from who responds
-
-**Keywords:** event-driven design, publish-subscribe, cognitive decoupling.
-
-Observer does not merely solve the inconvenience of notifying others. It solves the fact that a publisher should not know every consumer. After an order payment succeeds, inventory, rewards, notifications, audit, and risk control may all need to react. If the payment process directly calls every module, every new consumer requires a change to that primary process.
-
-This problem is common in AI-generated code. A model naturally puts every convenient follow-up action into the main flow. Observer provides a more mature structure: the main flow publishes a fact, while subscribers receive and handle the additional behavior themselves.
-
-- **Suitable for:** notifications, event extension points, plugin mechanisms, and domain events.
-- **Risk:** it is not a consistency silver bullet; transactional semantics still require separate design.
-- **Typical examples:** Spring `ApplicationEventPublisher` and Django Signals. [[4]](#ref-4) [[7]](#ref-7)
-
-```
-class EventBus:
-    def __init__(self) -> None:
-        self._subscribers: dict[str, list] = {}
-
-    def subscribe(self, event: str, fn) -> None:
-        self._subscribers.setdefault(event, []).append(fn)
-
-    def publish(self, event: str, payload: dict) -> None:
-        for fn in self._subscribers.get(event, []):
-            fn(payload)
-```
-
-### Factory Method: Defer the decision about which object to create
-
-**Keywords:** deferred creation, decoupling concrete classes, a centralized extension point.
-
-Factory Method concerns variation in the creation process. When callers only care that they need a report, parser, or client, they should not also decide whether it is JSON or HTML, local or remote.
-
-This is extremely common in frameworks. Object creation often involves configuration loading, dependency assembly, and lifecycle management; it is far more than a simple constructor call. Moving concrete instantiation decisions into a factory structure keeps the impact of adding a new type concentrated.
-
-- **Suitable for:** exporters, parsers, storage backends, and client instances.
-- **Typical examples:** Flask application factories and Spring Bean creation. [[8]](#ref-8) [[3]](#ref-3)
-
-```
-class JsonReport:
-    def render(self) -> str:
-        return '{"status": "ok"}'
-
-
-class HtmlReport:
-    def render(self) -> str:
-        return "<p>ok</p>"
-
-
-class JsonReportCreator:
-    def create_report(self):
-        return JsonReport()
-
-
-class HtmlReportCreator:
-    def create_report(self):
-        return HtmlReport()
-```
-
-### Abstract Factory: Create a compatible family, not one object
-
-**Keywords:** object families, consistency, coordinated switching.
-
-If Factory Method focuses on which object to create, Abstract Factory focuses on which compatible family of objects to create. Typical examples include theme systems, database dialects, and cloud-vendor integration layers. You are not switching one button; you are switching a coordinated set of buttons, dialogs, input controls, and colors.
-
-This is particularly useful when AI generates frontend code or SDK integrations. A model often produces locally plausible components with an inconsistent overall style. Abstract Factory makes consistency itself part of the structure.
-
-- **Suitable for:** theme systems, cross-platform components, and multi-vendor SDKs.
-- **Boundary:** Factory Method creates one object; Abstract Factory creates an object family.
-
-```
-class DarkThemeFactory:
-    def create_button(self) -> str:
-        return "dark-button"
-
-    def create_dialog(self) -> str:
-        return "dark-dialog"
-
-
-class LightThemeFactory:
-    def create_button(self) -> str:
-        return "light-button"
-
-    def create_dialog(self) -> str:
-        return "light-dialog"
-```
-
-### Singleton: Global uniqueness is tempting, so use it with restraint
-
-**Keywords:** a unique instance, global access, risk of state pollution.
-
-Singleton is one of the most easily misused patterns. It should express a semantically global resource, such as process-level configuration, a registry, or a resource facade. It should not mean, "I do not want to pass this dependency, so I will make it global."
-
-Modern engineering usually prefers a container-managed singleton scope instead of having every business class implement a singleton. Hand-written singletons readily create test pollution, residual state, and unclear concurrency semantics.
-
-- **Suitable for:** configuration objects and global resource registries.
-- **Not suitable for:** ordinary business dependencies and objects with extensive mutable state.
-- **Modern practice:** when a DI container can manage it, avoid writing it by hand.
-
-```
-class AppConfig:
-    _instance = None
-
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance.debug = False
-        return cls._instance
-```
-
-### Adapter: Keep the legacy system intact and still connect the new system
-
-**Keywords:** interface translation, compatibility layer, legacy-system integration.
-
-Adapter is suited to incompatible old and new interfaces. Real software engineering rarely starts from zero. More often, it bridges legacy systems, third-party APIs, old SDKs, and new modules. Its value is that the legacy system need not be rewritten; a translation layer is added instead.
-
-This is highly practical in AI Coding. A model typically generates new code for an ideal interface, while real repositories carry historical constraints. Adapter is the buffer that prevents the ideal structure and the actual system from colliding destructively.
-
-- **Suitable for:** legacy integration, unified wrappers for third-party SDKs, and payment or SMS gateways.
-- **Typical examples:** Spring MVC `HandlerAdapter` and Requests `HTTPAdapter`. [[5]](#ref-5) [[9]](#ref-9)
-
-```
-class LegacySmsService:
-    def send_sms(self, mobile: str, content: str) -> str:
-        return f"SMS to {mobile}: {content}"
-
-
-class SmsAdapter:
-    def __init__(self, legacy: LegacySmsService) -> None:
-        self.legacy = legacy
-
-    def send(self, user: str, message: str) -> str:
-        return self.legacy.send_sms(user, message)
-```
-
-### Decorator: Add capabilities layer by layer without changing the original class
-
-**Keywords:** responsibility enhancement, compositional stacking, cross-cutting capabilities.
-
-Decorator works especially well for cross-cutting enhancements such as logging, caching, authorization, retry, rate limiting, instrumentation, and compression. It is more flexible than inheritance because capabilities can be stacked as needed rather than requiring a large set of predeclared subclass combinations.
-
-Python decorator syntax makes this idea widespread. A `@cache`, `@retry`, or `@trace` says that enhancing a responsibility does not require altering the original function.
-
-- **Suitable for:** cross-cutting capabilities and enhancements that need to be stacked on demand.
-- **Boundary:** Decorator enhances responsibility; it does not control access.
-
-```
-class BasicSender:
-    def send(self, message: str) -> str:
-        return f"send:{message}"
-
-
-class TimestampDecorator:
-    def __init__(self, wrapped) -> None:
-        self.wrapped = wrapped
-
-    def send(self, message: str) -> str:
-        return self.wrapped.send(f"[2026-05-22] {message}")
-```
-
-### Proxy: Keep the interface but change access behavior
-
-**Keywords:** access control, lazy loading, remote proxies, permission boundaries.
-
-Proxy often has a structure similar to Decorator, but its intent is different. Decorator enhances a responsibility; Proxy controls access. A caller appears to access the real object but first passes through a control layer that can perform permission checks, lazy loading, cache lookup, remote calls, or transaction wrapping.
-
-Proxy is central in modern frameworks. Much of Spring AOP relies on proxy mechanisms, while ORM lazy-loading objects are an engineering realization of the same idea. [[5]](#ref-5)
-
-- **Suitable for:** access control, transaction proxies, remote services, and a local cache in front of a resource.
-- **Boundary:** similar structure does not make patterns the same; intent is decisive.
-
-```
-class FileStore:
-    def read(self, path: str) -> str:
-        return f"content({path})"
-
-
-class AccessProxy:
-    def __init__(self, store: FileStore, allowed: set[str]) -> None:
-        self.store = store
-        self.allowed = allowed
-
-    def read(self, path: str) -> str:
-        if path not in self.allowed:
-            raise PermissionError(path)
-        return self.store.read(path)
-```
-
-### Template Method: Fix the process skeleton and leave local steps variable
-
-**Keywords:** algorithm skeleton, deferred steps, stable process.
-
-Template Method fits problems where the primary process is stable but local steps vary. Examples include extract-transform-load work or acquiring a connection, executing core logic, and cleaning up resources. You do not want callers to assemble the whole process every time, and you do not want all details fixed in one implementation.
-
-Its value is that the template guarantees process order while subclasses provide variation. Spring `JdbcTemplate` is a classic industrial example. [[6]](#ref-6)
-
-- **Suitable for:** ETL, database access, and fixed business pipelines.
-- **Risk:** excessive dependence on inheritance can produce an expanding hierarchy and inheritance hell.
-
-```
-class DataPipeline:
-    def run(self) -> str:
-        raw = self.extract()
-        clean = self.transform(raw)
-        return self.load(clean)
-
-    def extract(self) -> str:
-        raise NotImplementedError
-
-    def transform(self, raw: str) -> str:
-        raise NotImplementedError
-
-    def load(self, clean: str) -> str:
-        raise NotImplementedError
-```
-
-### Facade: Give a complex subsystem one clear entry point
-
-**Keywords:** unified entry point, hidden orchestration complexity, reduced burden on callers.
-
-Facade does not eliminate complexity; it keeps complexity where it belongs. Ordering, payment, logistics, inventory, and notifications may each be complex subsystems, but callers should not need to reimplement the orchestration every time.
-
-This is particularly important in the AI era. A model can easily generate the same ?reserve inventory -> charge -> ship? process in several places. Once that duplicated orchestration spreads, maintenance becomes painful. Facade centralizes high-frequency collaboration flows.
-
-- **Suitable for:** ordering, payment, transcoding, aggregated search, and export flows.
-- **Benefit:** callers face one high-level interface instead of carrying lower-level coordination details.
-
-```
-class Inventory:
-    def reserve(self, sku: str) -> str:
-        return f"reserved:{sku}"
-
-
-class Payment:
-    def charge(self, user: str, amount: float) -> str:
-        return f"charged:{user}:{amount}"
-
-
-class Shipping:
-    def create(self, sku: str) -> str:
-        return f"ship:{sku}"
-
-
-class OrderFacade:
-    def place(self, user: str, sku: str, amount: float) -> list[str]:
-        return [
-            Inventory().reserve(sku),
-            Payment().charge(user, amount),
-            Shipping().create(sku),
-        ]
-```
-
-## 4. How to choose among the ten patterns
+### Fast question-to-pattern routing
 
 | Real question | Prefer | Decision statement |
 | --- | --- | --- |
-| One goal has multiple algorithms | Strategy | The algorithm changes, not the main process. |
-| The object-creation process changes | Factory Method | Users should not know how the concrete implementation is created. |
-| A compatible component set must switch | Abstract Factory | You need a consistent system, not one object. |
-| One event must notify many responders | Observer | The publisher should not know all consumers. |
-| Old and new interfaces are incompatible | Adapter | Add a translation layer instead of dismantling the legacy system. |
-| Cross-cutting capability must be stackable | Decorator | Enhance responsibility instead of copying subclasses. |
-| Access needs control before it proceeds | Proxy | The interface stays the same while access behavior changes. |
-| The process skeleton is stable but local steps vary | Template Method | Fix the skeleton, then open the steps. |
-| A subsystem is too complex and needs one public entry | Facade | The caller should not carry orchestration complexity. |
-| A globally unique instance is genuinely required | Singleton | First confirm whether a container should manage it. |
+| One goal has multiple algorithms | `Strategy` | The algorithm changes, not the main process. |
+| Behavior changes with lifecycle state | `State` | The object behaves differently because its internal state changes. |
+| Process order is stable but local steps vary | `Template Method` | The skeleton must stay fixed while steps vary. |
+| One concrete product choice must be delayed | `Factory Method` | Callers should not decide the concrete type. |
+| A compatible family must switch together | `Abstract Factory` | The design needs family consistency, not one object. |
+| Construction is itself complex | `Builder` | The hard part is how to assemble, not only what to create. |
+| Copying is safer or cheaper than rebuilding | `Prototype` | A prepared baseline object should be cloned into variants. |
+| Old and new interfaces are incompatible | `Adapter` | Add a translation boundary instead of spreading legacy shape. |
+| Two axes vary independently | `Bridge` | Separate abstraction from implementation before class counts explode. |
+| Leaves and containers should look uniform | `Composite` | The caller should not keep branching on part versus whole. |
+| Responsibilities must stack | `Decorator` | Enhance behavior additively instead of creating subclass combinations. |
+| Access semantics differ from direct access | `Proxy` | The interface may stay, but authorization, remoteness, or load timing changes. |
+| A subsystem is too complex for repeated callers | `Facade` | Callers should not carry orchestration complexity. |
+| Object count creates real memory pressure | `Flyweight` | Share intrinsic immutable state and externalize varying context. |
+| A request should flow through optional handlers | `Chain of Responsibility` | Handling ownership should remain pluggable. |
+| An operation needs queueing, audit, undo, or retry | `Command` | The action itself needs a lifecycle beyond a direct call. |
+| Business rules have become a small language | `Interpreter` | The real problem is grammar and evaluation, not only branching. |
+| Traversal should not expose storage details | `Iterator` | Visiting elements must be separated from internal representation. |
+| Peers are over-coupled through mesh coordination | `Mediator` | Coordination rules should move to one hub. |
+| State must be captured and restored | `Memento` | Encapsulation should survive undo or checkpoint behavior. |
+| One fact fans out to many reactions | `Observer` | The publisher should not know every responder. |
+| Stable heterogeneous elements keep receiving new operations | `Visitor` | Operations vary more than the element structure. |
+| A resource is semantically unique | `Singleton` | Uniqueness must be a real scope requirement, not convenience. |
+
+### Pattern-confusion matrix
+
+The article now spends much more effort on boundaries between neighbors. Those boundaries should appear in design teaching:
+
+| Confusing pair or cluster | The real distinction |
+| --- | --- |
+| `Factory Method` / `Abstract Factory` / `Builder` / `Prototype` | one product choice / family choice / staged assembly / copying |
+| `Adapter` / `Decorator` / `Proxy` | translation / enhancement / control |
+| `Strategy` / `State` / `Template Method` | selected algorithm / lifecycle behavior / fixed skeleton |
+| `Facade` / `Mediator` | simplify external use / coordinate internal peers |
+| `Observer` / `Chain of Responsibility` / `Command` | one fact to many listeners / one request through ordered handlers / one operation as an object |
+| `Composite` / `Visitor` / `Iterator` | stable tree structure / new operations over stable elements / traversal protocol |
+| `Bridge` / `Strategy` | two durable axes of variation / one algorithm slot |
+
+The design-stage takeaway is simple: when two patterns look similar, compare their variation points, not their surface wrapping shape.
 
 ## 5. The most common pattern misuses in the AI Coding era
 
-The greatest danger today is not that developers do not know design patterns. It is that a model learns several pattern names and starts applying shells everywhere. A system then looks engineered while actually accumulating unnecessary layers of structural noise.
+The updated article sharpens one warning: the most dangerous problem is often not ignorance of patterns, but fast overuse of them.
 
-- **Abstracting for abstraction's sake:** creating interfaces, factories, and proxies while only one stable implementation exists.
-- **Using Singleton to conceal dependency passing:** replacing dependency injection with global state.
-- **Treating Observer as an asynchronous silver bullet:** publishing events for everything until eventual consistency and ordering become chaotic.
-- **Confusing Decorator, Proxy, and Adapter:** looking only at structure rather than intent.
-- **Turning Template Method into inheritance hell:** continuously deepening hierarchies and fragmenting extension points.
+### Frequent misuse signals
 
-The practical conclusion is:
+| Misuse signal | Superficial justification | Real damage |
+| --- | --- | --- |
+| Creating interfaces and factories around one stable implementation | "We may need it later" | More indirection with no proven variation |
+| Hiding dependencies inside singletons | "Global access is easier" | Test pollution, hidden ownership, concurrency ambiguity |
+| Turning every side effect into an event | "Everything is decoupled" | Ordering, consistency, and observability become weak |
+| Calling every wrapper a proxy | "The shape is similar" | Intent becomes invisible, debugging gets harder |
+| Expanding inheritance through Template Method | "The flow is reusable" | Fragile base classes and extension-point sprawl |
+| Using Flyweight without measured object pressure | "It looks optimized" | Model clarity is sacrificed for imaginary performance |
+| Building a DSL too early with Interpreter | "Rules are more flexible" | A half-language appears before its costs are understood |
+| Growing Chain of Responsibility without explicit traceability | "Handlers are pluggable" | Runtime policy becomes opaque |
 
-> The best use of a design pattern is not that more patterns demonstrate greater sophistication. It is that an appropriate pattern is introduced precisely when a real variation appears.
+### The article's anti-pattern rule
 
-## 6. Why Spring, Django, Flask, and Requests repeatedly use these patterns
+Do not treat abstraction as a badge of sophistication. Every new boundary, factory, proxy, event bus, or hierarchy creates a maintenance obligation. A pattern only earns its cost when it isolates a real and recurring variation better than the direct alternative.
 
-These patterns recur because their problems are structurally equivalent to framework problems. Spring needs IoC, so creation logic must be extracted. It needs AOP, so proxy mechanisms become central. It needs templated database access, so Template Method becomes a foundational skeleton. Django needs a signal system, so Observer arises naturally. Flask benefits from delayed application creation, so factory thinking is natural. Requests needs a unified wrapper over different transports, so Adapter is a sound structure. [[3]](#ref-3) [[5]](#ref-5) [[6]](#ref-6) [[7]](#ref-7) [[8]](#ref-8) [[9]](#ref-9)
+## 6. Why modern frameworks repeatedly grow into these patterns
 
-The implication for AI Coding is direct: without understanding the structure a framework depends on, a model can generate code that runs but does not follow the framework's philosophy. It may pass in the short term and become very difficult to maintain in the long term.
+The article's framework section is not there to worship frameworks. It exists to show that mature frameworks repeatedly converge on the same structural answers because they repeatedly face the same variation-management problems.
 
-## 7. Final judgment: The valuable skill is not writing version one, but surviving version five
+| Framework or mechanism | Patterns visible underneath | What the architect should learn |
+| --- | --- | --- |
+| Spring Bean creation and scopes | `Factory Method`, `Abstract Factory`, `Singleton` | Object creation and lifecycle should not be scattered through business code. |
+| Spring AOP | `Proxy` | Access semantics and cross-cutting control can be woven through a proxy layer. |
+| Spring `JdbcTemplate` | `Template Method` | Resource safety and process order belong in the skeleton, not in every caller. |
+| Django Signals | `Observer` | Facts and reactions can be separated, but consistency still needs explicit design. |
+| Flask application factories | `Factory Method` | App creation is itself an extension seam. |
+| Requests transport adapters | `Adapter` | Transport differences can be isolated at one translation boundary. |
+| Java and Python iteration contracts | `Iterator` | A classic pattern may disappear into a language abstraction while keeping the same design intent. |
 
-Design patterns matter today not simply because they are classics, but because they provide a stable, cross-era set of tools for structural judgment. When AI makes code generation extremely fast, the most valuable human capability is no longer "I can type this code." It is "I know how this code will decay and how to block that decay path from the beginning."
+The updated article's message here is important for `architect-design`: when recommending a structure, it is stronger to show why the framework problem is structurally equivalent than merely saying "framework X uses pattern Y."
 
-Understanding design patterns is not about making a system resemble a textbook. It is about preserving the essentials of software engineering in the face of AI-generated speed: boundaries, substitution, evolution, testing, and collaboration.
+## 7. Final judgment: patterns matter because they train structural judgment
 
-A single sentence closes the article:
+The article closes with a broader point: GoF patterns matter today not because software teams should imitate textbooks, but because the catalog provides a stable training ground for structural judgment.
 
-> In the AI Coding era, code is not scarce; structure is. Design patterns are one of the shortest, most reliable, and most time-tested paths for training structural thinking.
+In the AI era, the most valuable human capability is no longer the ability to type version one. It is the ability to see how version five will decay if boundaries are chosen badly today.
+
+Use this reference to teach four closing ideas in every serious design recommendation:
+
+1. Code is abundant; structure is scarce.
+2. Pattern choice is a means of isolating change, not a sign of sophistication.
+3. Full GoF literacy helps prevent category mistakes, especially between adjacent patterns.
+4. The best recommendation is the one that preserves replaceability, verifiability, compatibility, and future reasoning clarity under real repository constraints.
+
+The shortest accurate summary of the updated article is this:
+
+Structural judgment, not raw code generation speed, is the core competitive advantage in the AI Coding era. The full GoF catalog remains one of the most practical training sets for that judgment.
 
 ---
 
 ## References
 
-<a id="ref-1"></a>[[1]](https://refactoring.guru/design-patterns/catalog) Refactoring.Guru. *Design Patterns Catalog*.
+<a id="ref-1"></a>[[1]](https://en.wikipedia.org/wiki/Design_Patterns) Gamma, E., Helm, R., Johnson, R., and Vlissides, J. Related overview for *Design Patterns: Elements of Reusable Object-Oriented Software*.
 
-<a id="ref-2"></a>[[2]](https://martinfowler.com/articles/injection.html) Fowler, M. *Inversion of Control Containers and the Dependency Injection Pattern*.
+<a id="ref-2"></a>[[2]](https://www.informit.com/articles/article.aspx?p=1404056) Gamma, E., Helm, R., Johnson, R., and Vlissides, J. *Design Patterns: 15 Years Later*.
 
-<a id="ref-3"></a>[[3]](https://docs.spring.io/spring-framework/reference/core/beans/factory-scopes.html) Spring Framework Reference. *Bean Scopes*.
+<a id="ref-3"></a>[[3]](https://martinfowler.com/articles/injection.html) Fowler, M. *Inversion of Control Containers and the Dependency Injection Pattern*.
 
-<a id="ref-4"></a>[[4]](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/ApplicationEventPublisher.html) Spring Framework Javadoc. *ApplicationEventPublisher*.
+<a id="ref-4"></a>[[4]](https://docs.spring.io/spring-framework/reference/core/beans/factory-scopes.html) Spring Framework Reference. *Bean Scopes*.
 
-<a id="ref-5"></a>[[5]](https://docs.spring.io/spring-framework/reference/core/aop/proxying.html) Spring Framework Reference. *Proxying Mechanisms*.
+<a id="ref-5"></a>[[5]](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/ApplicationEventPublisher.html) Spring Framework Javadoc. *ApplicationEventPublisher*.
 
-<a id="ref-6"></a>[[6]](https://docs.spring.io/spring-framework/reference/data-access/jdbc/core.html) Spring Framework Reference. *JDBC Core and JdbcTemplate*.
+<a id="ref-6"></a>[[6]](https://docs.spring.io/spring-framework/reference/core/aop/proxying.html) Spring Framework Reference. *Proxying Mechanisms*.
 
-<a id="ref-7"></a>[[7]](https://docs.djangoproject.com/en/stable/topics/signals/) Django Documentation. *Signals*.
+<a id="ref-7"></a>[[7]](https://docs.spring.io/spring-framework/reference/data-access/jdbc/core.html) Spring Framework Reference. *JDBC Core and JdbcTemplate*.
 
-<a id="ref-8"></a>[[8]](https://flask.palletsprojects.com/en/stable/patterns/appfactories/) Flask Documentation. *Application Factories*.
+<a id="ref-8"></a>[[8]](https://docs.djangoproject.com/en/stable/topics/signals/) Django Documentation. *Signals*.
 
-<a id="ref-9"></a>[[9]](https://requests.readthedocs.io/en/latest/user/advanced/#transport-adapters) Requests Documentation. *Transport Adapters*.
+<a id="ref-9"></a>[[9]](https://flask.palletsprojects.com/en/stable/patterns/appfactories/) Flask Documentation. *Application Factories*.
 
-<a id="ref-10"></a>[[10]](https://docs.python.org/3/library/abc.html) Python Documentation. *abc*.
+<a id="ref-10"></a>[[10]](https://requests.readthedocs.io/en/master/user/advanced/) Requests Documentation. *Transport Adapters*.
 
-<a id="ref-11"></a>[[11]](https://docs.python.org/3/library/contextlib.html) Python Documentation. *contextlib*.
+<a id="ref-11"></a>[[11]](https://sourcemaking.com/design_patterns) SourceMaking. *Design Patterns Catalog*.
 
-<a id="ref-12"></a>[[12]](https://doi.org/10.1016/j.infsof.2015.05.006) Ampatzoglou, A., Chatzigeorgiou, A., Charalampidou, S., and Avgeriou, P. The effect of GoF design patterns on stability: A case study. *Information and Software Technology*, 2015.
+<a id="ref-12"></a>[[12]](https://refactoring.guru/design-patterns/catalog) Refactoring.Guru. *Design Patterns Catalog*.
 
-<a id="ref-13"></a>[[13]](https://www.sciencedirect.com/science/article/pii/S0164121216302321) Ampatzoglou, A., et al. The state of the art on software engineering design patterns: A systematic mapping study. *Journal of Systems and Software*, 2016.
+<a id="ref-13"></a>[[13]](https://refactoring.guru/design-patterns/history) Refactoring.Guru. *The History of Design Patterns*.
+
+<a id="ref-14"></a>[[14]](https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html) Oracle Java SE 8 API. *Iterator*.
+
+<a id="ref-15"></a>[[15]](https://docs.python.org/3/library/stdtypes.html#iterator-types) Python Documentation. *Iterator Types*.
+
+<a id="ref-16"></a>[[16]](https://doi.org/10.1016/j.infsof.2015.05.006) Ampatzoglou, A., Chatzigeorgiou, A., Charalampidou, S., and Avgeriou, P. The effect of GoF design patterns on stability: A case study. *Information and Software Technology*, 2015.
+
+<a id="ref-17"></a>[[17]](https://www.sciencedirect.com/science/article/pii/S0164121216302321) Ampatzoglou, A., et al. The state of the art on software engineering design patterns: A systematic mapping study. *Journal of Systems and Software*, 2016.

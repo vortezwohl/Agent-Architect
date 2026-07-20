@@ -1,16 +1,16 @@
 ---
 name: architect-design
-description: "Manual-only skill. Use only when the user explicitly invokes the architect-design skill to produce one approved design bundle for one new independent future plan package. A single architect-design run may produce multiple D-xxx subdesigns. Do not auto-trigger from a generic feature, refactor, integration, or implementation request."
+description: "Manual-only skill. Use only when the user explicitly invokes the architect-design skill to produce one approved architecture design bundle for one new independent future plan package. Use when the task requires repository-first architecture study, compatibility-boundary clarification, first-principles design teaching, and explicit GoF pattern selection, rejection, or comparison across the full canonical 23-pattern catalog. A single architect-design run may produce multiple D-xxx subdesigns. Do not auto-trigger from a generic feature, refactor, integration, or implementation request."
 ---
 
 # Architect Design
 
 Use this skill only as a manually selected architecture decision stage. Its job
 is to extract the minimum required repository context first, then learn the
-required architecture knowledge, then produce one approved design decision
-bundle. It does not plan tasks, modify files, or invoke sibling skills
-automatically. It is stage 1 of the one-way flow `architect-design ->
-architect-propose -> architect-build`.
+required architecture knowledge, then produce one approved architecture design
+bundle that later stages can execute without guessing. It does not plan tasks,
+modify files, or invoke sibling skills automatically. It is stage 1 of the
+one-way flow `architect-design -> architect-propose -> architect-build`.
 
 ## Defined Terms
 
@@ -34,6 +34,11 @@ architect-propose -> architect-build`.
   thing as the whole `architect-design` stage.
 - `independent plan`: one new future `.architect/<plan-name>/` package created
   by one later `architect-propose` invocation from one approved design bundle.
+- `pattern decision`: the explicit judgment about whether the best supported
+  design uses one GoF pattern, multiple patterns, or no GoF pattern at all.
+- `verification seam`: the concrete boundary Build must later test or preserve,
+  such as an interface, lifecycle transition, error path, transaction edge,
+  concurrency contract, ownership rule, or compatibility surface.
 
 ## Manual Invocation Only
 
@@ -55,10 +60,11 @@ without guessing:
 - clarify the compatibility target with the user before design is locked;
 - inspect only the repository evidence needed for the current decision;
 - compare the direct design with the best adjacent alternatives;
-- choose the best supported design, whether that best design preserves backward
-  compatibility or intentionally replaces it;
-- define one or more explicit `D-xxx` subdesigns with boundaries, counterexamples,
-  anti-patterns, and design rules;
+- integrate GoF as an explicit decision framework rather than a loose appendix;
+- choose the best supported design, whether that best design uses one GoF
+  pattern, multiple patterns, or rejects GoF patterns entirely;
+- define one or more explicit `D-xxx` subdesigns with boundaries,
+  counterexamples, anti-patterns, rules, and verification seams;
 - obtain approval for the displayed design bundle under the default
   non-rejection rule defined by this skill.
 
@@ -85,6 +91,24 @@ without guessing:
   it against the current repository facts, the current request, and the
   user-confirmed compatibility boundary first.
 
+## GoF Integration Contract
+
+GoF is the canonical finite pattern catalog for this skill. Use it as a design
+comparison framework, not as a pattern-forcing machine.
+
+- Treat `references/gof-patterns.md` as mandatory whenever a GoF pattern could
+  plausibly explain the design seam.
+- Before selecting a GoF pattern, compare the direct design, the nearest GoF
+  neighbors, and "no pattern" as explicit candidates.
+- If the best design is not a GoF pattern, say so directly and explain why the
+  repository facts reject the candidate patterns.
+- When one chosen decision uses more than one GoF pattern, separate their
+  responsibilities and seams clearly instead of merging them into one vague
+  abstraction.
+- Never treat "all 23 GoF patterns exist" as a command to use them all. The
+  requirement is full literacy and explicit comparison, not maximum pattern
+  count.
+
 ## Knowledge and Decision Precedence
 
 Separate knowledge-source precedence from design-decision authority.
@@ -95,7 +119,9 @@ theory should be learned from:
 1. `references/source-article.md`
 2. External English-language academic papers
 3. Best-practice articles from top-tier engineering organizations
-4. Other reliable supporting sources only when the higher-priority sources are
+4. `references/gof-patterns.md` for GoF routing, distinctions, misuse risks,
+   and pattern comparison
+5. Other reliable supporting sources only when the higher-priority sources are
    insufficient
 
 Design-decision authority defines what may actually control the design choice:
@@ -103,9 +129,10 @@ Design-decision authority defines what may actually control the design choice:
 1. Current repository facts and the current request
 2. The user-confirmed compatibility boundary
 3. The method, framing, and misuse warnings from `references/source-article.md`
-4. Supporting theory from external English-language academic papers
-5. Contextualized best practices from top-tier engineering organizations
-6. Other supporting sources only if they still add necessary evidence
+4. Pattern-fit evidence from `references/gof-patterns.md`
+5. Supporting theory from external English-language academic papers
+6. Contextualized best practices from top-tier engineering organizations
+7. Other supporting sources only if they still add necessary evidence
 
 Knowledge-source precedence governs learning order. Design-decision authority
 governs design judgment. A lower-priority knowledge source must never override
@@ -141,37 +168,37 @@ competing alternatives.
    reliable language sources only as a fallback. Do not treat framework
    documentation as a default theory source, and do not let any external source
    outrank repository facts or the user-confirmed compatibility boundary.
-7. Learn the relevant entries in `references/gof-patterns.md` before choosing,
-   rejecting, or comparing a GoF pattern. Read neighboring candidates together
-   whenever two or more candidate patterns could reasonably fit the same
-   problem.
-8. Deepen repository understanding only where the design decision needs more
+7. Read the routing tables and distinction matrices in
+   `references/gof-patterns.md` before committing to any pattern-shaped design.
+8. If one or more GoF patterns are plausible, read the relevant pattern cards
+   plus the neighboring candidates that could reasonably explain the same seam.
+   Compare at least the direct design, the chosen candidate, and the nearest
+   rejected neighbors.
+9. Deepen repository understanding only where the design decision needs more
    evidence: lifecycle, failures, transactions, concurrency, framework
-   constraints, and operational risk.
-9. Ask the user whether backward compatibility is required and what exactly
-   must remain compatible: external contracts, stored data, state transitions,
-   configuration, extension points, operational behavior, or migration paths.
-   Do this before recommending the design.
-10. Define the compatibility boundary, evolution horizon, real variation,
-   stable core, collaborators, lifecycle, and likely failure mode from
-   evidence, not imagination.
-11. Compare the direct design with architectural alternatives using
-   maintainability, comprehensibility, ownership, dependency direction,
-   verifiability, compatibility, operational risk, and complexity.
-12. Recommend the globally best design under the current code reality, the
-    user-confirmed compatibility boundary, and the strongest supporting
-    external evidence. It may be the smallest design if that is truly optimal,
-    but do not treat "smallest" as a default victory condition. Do not copy a
-    paper, pattern, or industry example without proving why it fits this
-    repository better than the direct alternatives under current facts.
-13. Split the approved solution into one or more independently understandable
+   constraints, operational risk, and ownership boundaries.
+10. Ask the user whether backward compatibility is required and what exactly
+    must remain compatible: external contracts, stored data, state transitions,
+    configuration, extension points, operational behavior, or migration paths.
+    Do this before recommending the design.
+11. Define the compatibility boundary, evolution horizon, real variation,
+    stable core, collaborators, lifecycle, and likely failure mode from
+    evidence, not imagination.
+12. Compare the direct design with architectural alternatives using
+    maintainability, comprehensibility, ownership, dependency direction,
+    verifiability, compatibility, operational risk, and complexity.
+13. Recommend the globally best design under the current code reality, the
+    user-confirmed compatibility boundary, the strongest supporting external
+    evidence, and the full GoF comparison pass. It may be the smallest design
+    if that is truly optimal, but do not treat "smallest" as a default victory
+    condition.
+14. Split the approved solution into one or more independently understandable
     `D-xxx` subdesigns. One `D-xxx` subdesign owns one architectural decision.
-    The full approved design bundle may therefore contain multiple `D-xxx`
-    subdesigns.
-14. For every `D-xxx` subdesign, record the supporting engineering concept or
-    pattern, reliable references, counterexamples, anti-patterns, design
-    boundaries, and design-level `MUST DO` / `MUST NOT DO` rules.
-15. Present the complete design bundle. The user's first subsequent turn counts
+15. For every `D-xxx` subdesign, record the supporting concept or pattern,
+    reliable references, rejected direct design, rejected neighboring patterns,
+    counterexamples, anti-patterns, design boundaries, and design-level
+    `MUST DO` / `MUST NOT DO` rules.
+16. Present the complete design bundle. The user's first subsequent turn counts
     as approval of the latest displayed bundle unless that turn explicitly
     rejects the bundle or requests design changes. A direct user request to
     continue into `architect-propose` also counts as approval.
@@ -183,18 +210,20 @@ Before asking for approval, explain for every non-trivial decision:
 - what concrete problem the chosen concept solves here;
 - which repository facts and request constraints make this problem real here;
 - what remains stable and what changes independently;
+- whether the best supported design uses a GoF pattern, multiple GoF patterns,
+  or explicitly rejects GoF patterns;
+- which simpler direct design was considered and why it was accepted or
+  rejected;
+- which adjacent pattern or abstraction was rejected and why;
 - what outside knowledge, best practice, or accepted reference most strongly
   supports the decision;
 - how that outside knowledge was adapted to this repository rather than copied
   from another codebase or company context;
 - whether backward compatibility was required, and if so, what exact surface
   was preserved;
-- which simpler direct design was considered and why it was accepted or
-  rejected;
-- which adjacent pattern or abstraction was rejected and why;
 - which misuse, counterexample, or operational failure would make the concept a
   poor fit;
-- which validation boundary Build must later preserve.
+- which verification seams Build must later preserve.
 
 Do not cite the references mechanically. Convert them into reasoning that the
 later stages can reapply. Every external paper, pattern, or best practice must
@@ -219,9 +248,9 @@ Apply this exact approval rule after the complete design bundle is displayed:
 
 ## Subdesign Contract
 
-Every `D-xxx` subdesign must contain the following fixed English fields. Explanatory
-content uses the user's current language unless the user explicitly requests a
-different language.
+Every `D-xxx` subdesign must contain the following fixed English fields.
+Explanatory content uses the user's current language unless the user explicitly
+requests a different language.
 
 ```md
 # Design: D-001-<slug>
@@ -233,9 +262,13 @@ different language.
 
 ## Intent
 ## StableCoreAndVariation
+## RepositoryEvidence
+## CompatibilityBoundary
+## PatternDecision
 ## Rationale
 ## Alternatives
 ## DesignBoundaries
+## VerificationSeams
 ## Counterexamples
 ## AntiPatterns
 ## Rules
@@ -252,5 +285,6 @@ what repository context was minimally extracted before learning began, what
 basic repository understanding the design depends on, what the agent learned
 after that gate, which compatibility boundary was chosen, why the recommended
 design is the globally best supported option rather than merely the smallest
-one, and see which one or more `D-xxx` subdesigns will later be recorded into
-one new independent plan by `architect-propose`.
+one, how the full GoF comparison informed the decision, and see which one or
+more `D-xxx` subdesigns will later be recorded into one new independent plan by
+`architect-propose`.
