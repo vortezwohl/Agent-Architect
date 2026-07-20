@@ -117,10 +117,10 @@ Knowledge-source precedence defines where architecture method and supporting
 theory should be learned from:
 
 1. `references/source-article.md`
-2. External English-language academic papers
-3. Best-practice articles from top-tier engineering organizations
-4. `references/gof-patterns.md` for GoF routing, distinctions, misuse risks,
+2. `references/gof-patterns.md` for GoF routing, distinctions, misuse risks,
    and pattern comparison
+3. External English-language academic papers
+4. Best-practice articles from top-tier engineering organizations
 5. Other reliable supporting sources only when the higher-priority sources are
    insufficient
 
@@ -161,15 +161,16 @@ competing alternatives.
    stage.
 5. Read `references/source-article.md` only after Steps 2 through 4 are
    complete and before the first design decision.
-6. Continue learning beyond the local references. Before proposing a design,
-   gather enough external knowledge to cite concrete supporting evidence in the
-   precedence order defined above. Read external English-language academic
-   papers before top-tier engineering best-practice articles. Use other
-   reliable language sources only as a fallback. Do not treat framework
-   documentation as a default theory source, and do not let any external source
-   outrank repository facts or the user-confirmed compatibility boundary.
-7. Read the routing tables and distinction matrices in
+6. Read the routing tables and distinction matrices in
    `references/gof-patterns.md` before committing to any pattern-shaped design.
+7. Continue learning beyond the local references only after Steps 5 and 6 are
+   complete. Before proposing a design, gather enough external knowledge to
+   cite concrete supporting evidence in the precedence order defined above.
+   Read external English-language academic papers before top-tier engineering
+   best-practice articles. Use other reliable language sources only as a
+   fallback. Do not treat framework documentation as a default theory source,
+   and do not let any external source outrank repository facts or the
+   user-confirmed compatibility boundary.
 8. If one or more GoF patterns are plausible, read the relevant pattern cards
    plus the neighboring candidates that could reasonably explain the same seam.
    Compare at least the direct design, the chosen candidate, and the nearest
@@ -195,9 +196,10 @@ competing alternatives.
 14. Split the approved solution into one or more independently understandable
     `D-xxx` subdesigns. One `D-xxx` subdesign owns one architectural decision.
 15. For every `D-xxx` subdesign, record the supporting concept or pattern,
-    reliable references, rejected direct design, rejected neighboring patterns,
-    counterexamples, anti-patterns, design boundaries, and design-level
-    `MUST DO` / `MUST NOT DO` rules.
+    repository evidence, compatibility boundary, pattern decision, external
+    evidence decision, reliable references, rejected direct design, rejected
+    neighboring patterns, counterexamples, anti-patterns, design boundaries,
+    verification seams, and design-level `MUST DO` / `MUST NOT DO` rules.
 16. Present the complete design bundle. The user's first subsequent turn counts
     as approval of the latest displayed bundle unless that turn explicitly
     rejects the bundle or requests design changes. A direct user request to
@@ -215,10 +217,13 @@ Before asking for approval, explain for every non-trivial decision:
 - which simpler direct design was considered and why it was accepted or
   rejected;
 - which adjacent pattern or abstraction was rejected and why;
-- what outside knowledge, best practice, or accepted reference most strongly
-  supports the decision;
-- how that outside knowledge was adapted to this repository rather than copied
-  from another codebase or company context;
+- which outside knowledge, best practice, papers, or framework examples were
+  considered during external learning;
+- which outside knowledge was accepted, which was rejected, and why each
+  acceptance or rejection is justified by repository facts rather than by
+  prestige or familiarity;
+- how the accepted outside knowledge was adapted to this repository rather than
+  copied from another codebase or company context;
 - whether backward compatibility was required, and if so, what exact surface
   was preserved;
 - which misuse, counterexample, or operational failure would make the concept a
@@ -265,6 +270,7 @@ requests a different language.
 ## RepositoryEvidence
 ## CompatibilityBoundary
 ## PatternDecision
+## ExternalEvidenceDecision
 ## Rationale
 ## Alternatives
 ## DesignBoundaries
@@ -285,6 +291,6 @@ what repository context was minimally extracted before learning began, what
 basic repository understanding the design depends on, what the agent learned
 after that gate, which compatibility boundary was chosen, why the recommended
 design is the globally best supported option rather than merely the smallest
-one, how the full GoF comparison informed the decision, and see which one or
-more `D-xxx` subdesigns will later be recorded into one new independent plan by
-`architect-propose`.
+one, how the full GoF comparison informed the decision, how external evidence
+was accepted or rejected, and see which one or more `D-xxx` subdesigns will
+later be recorded into one new independent plan by `architect-propose`.

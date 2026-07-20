@@ -11,9 +11,9 @@ Maintain this protocol and all skill instructions in English. Use the user's cur
 3. Perform minimal context extraction before any knowledge injection. Extract only the repository facts needed to identify the system purpose, relevant entry points, affected modules, current behavior owner, caller path, state flow, current tests, and operational constraints for the requested change.
 4. Establish basic repository understanding from that extracted context before design is recommended. This gate is satisfied only when you can explicitly state the system purpose, relevant entry points, affected modules, current behavior owner, caller path, state flow, constraints, and current tests for the requested change.
 5. Read `source-article.md` only after Step 4 is satisfied and before the first design decision for methodology, pattern framing, and AI-era misuse warnings.
-6. Read `gof-patterns.md` for candidate patterns and neighboring comparisons before selecting, rejecting, or reviewing a GoF pattern.
+6. Read `gof-patterns.md` immediately after `source-article.md` and before any external architecture learning so the local GoF comparison frame is established first.
 7. Convert what those references teach into explicit reasoning. Do not cite them mechanically or treat a pattern name as sufficient evidence.
-8. Keep knowledge-source precedence and design-decision authority separate. Learn external supporting theory in this order: `source-article.md`, external English-language academic papers, best-practice articles from top-tier engineering organizations, then other reliable supporting sources only if still needed.
+8. Keep knowledge-source precedence and design-decision authority separate. Learn external supporting theory in this order: `source-article.md`, `gof-patterns.md`, external English-language academic papers, best-practice articles from top-tier engineering organizations, then other reliable supporting sources only if still needed.
 9. Do not treat framework documentation as a default theory source, and do not treat a best practice, a famous paper, or a top-tier company example as a design command.
 10. Repository facts, the current request, and the user-confirmed compatibility boundary outrank every external source. External knowledge may support a design only after repository-first reasoning proves that it fits this repository better than the available alternatives.
 
@@ -30,6 +30,15 @@ Maintain this protocol and all skill instructions in English. Use the user's cur
   invocation.
 - `D-xxx subdesign`: one independently explainable architectural decision inside
   the approved design bundle.
+- `pattern decision`: the explicit judgment about whether the best supported
+  design uses one GoF pattern, multiple GoF patterns, or no GoF pattern at all.
+- `external evidence decision`: the explicit record of which external sources,
+  patterns, papers, framework examples, or best-practice claims were accepted
+  or rejected and why.
+- `verification seam`: the concrete boundary that later Build work must test or
+  preserve, such as an interface, lifecycle transition, error path,
+  transaction edge, concurrency contract, ownership rule, or compatibility
+  surface.
 - `independent plan`: one new future `.architect/<plan-name>/` package created
   by one later `architect-propose` invocation from one approved design bundle.
 
@@ -54,8 +63,9 @@ Do not copy an external architecture only because it appears successful, elegant
 Choose the globally best justified architecture for the stated evolution horizon under the current code reality, the user-approved compatibility boundary, and the strongest supporting external evidence. Compare the direct alternative, but do not grant it automatic priority merely because it is smaller. The approved design bundle may contain multiple `D-xxx` subdesigns. Every chosen `D-xxx` subdesign must include:
 - A recognized engineering concept or pattern, canonical name, category, and reliable reference.
 - The stable core, actual variation, collaborators, ownership, dependency direction, lifecycle, and failure semantics.
+- Repository evidence, compatibility boundary, explicit pattern decision, and explicit external evidence decision.
 - Concrete alternatives and rejected neighboring concepts.
-- Explicit design boundaries, counterexamples, and anti-patterns.
+- Explicit design boundaries, verification seams, counterexamples, and anti-patterns.
 - Design-level `MUST DO` and `MUST NOT DO` rules that constrain implementation details rather than merely desired results.
 
 Do not introduce an unnamed abstraction, speculative extension point, hidden global dependency, event without delivery semantics, or inheritance hierarchy without evidence that it improves the stated decision criteria.
@@ -67,13 +77,15 @@ Before asking for approval, teach the design instead of only presenting a conclu
 - The concrete problem this concept solves in the current repository or request.
 - The repository facts, request constraints, and compatibility requirements that make this problem real here.
 - The stable core and the real variation that justify the concept.
+- Whether the best supported design uses one GoF pattern, multiple GoF patterns, or explicitly rejects GoF patterns.
 - How the cited paper, pattern, or best practice was adapted to this repository instead of copied from a foreign context.
+- Which outside evidence was considered, which evidence was accepted or rejected, and why those acceptance or rejection decisions follow from repository facts.
 - The simplest direct design that was considered, and why it was accepted or rejected.
 - The nearest neighboring pattern or abstraction that was rejected, and why.
 - The likely misuse, counterexample, or operational failure that would make this concept a poor fit.
-- The validation boundary that must hold if Build later implements the design.
+- The verification seam that must hold if Build later implements the design.
 
-When possible, map the teaching explanation directly onto the design-unit fields: `Intent`, `StableCoreAndVariation`, `Rationale`, `Alternatives`, `Counterexamples`, `AntiPatterns`, and `Rules`.
+When possible, map the teaching explanation directly onto the design-unit fields: `Intent`, `StableCoreAndVariation`, `RepositoryEvidence`, `CompatibilityBoundary`, `PatternDecision`, `ExternalEvidenceDecision`, `Rationale`, `Alternatives`, `VerificationSeams`, `Counterexamples`, `AntiPatterns`, and `Rules`.
 
 ## Gate 1: Design Approval
 
@@ -83,4 +95,4 @@ Record approval evidence and a digest of the approved bundle. One later `archite
 
 ## Handoff Gate
 
-Do not hand off to Propose when any `D-xxx` subdesign lacks a concept, rationale, counterexample, anti-pattern, design boundary, MUST rule, teaching explanation, or approval coverage. If a later independent cycle needs a new design decision, that new decision belongs to a new Architect Design stage and a new independent plan cycle, not to improvisation inside the current Propose or Build run.
+Do not hand off to Propose when any `D-xxx` subdesign lacks a concept, repository evidence, compatibility boundary, pattern decision, external evidence decision, rationale, verification seam, counterexample, anti-pattern, design boundary, MUST rule, teaching explanation, or approval coverage. If a later independent cycle needs a new design decision, that new decision belongs to a new Architect Design stage and a new independent plan cycle, not to improvisation inside the current Propose or Build run.

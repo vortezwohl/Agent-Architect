@@ -143,6 +143,16 @@ Initialize `.state/execution-state.json` and `08-execution-log.md` as part of
 package creation. Build should start from these recorded artifacts, not infer
 missing state from memory.
 
+Every `03-designs/D-xxx-<slug>.md` document must preserve the approved design
+contract exactly. Each design document must contain the fixed headings
+`Concept`, `Intent`, `StableCoreAndVariation`, `RepositoryEvidence`,
+`CompatibilityBoundary`, `PatternDecision`, `ExternalEvidenceDecision`,
+`Rationale`, `Alternatives`, `DesignBoundaries`, `VerificationSeams`,
+`Counterexamples`, `AntiPatterns`, and `Rules` with both `MUST DO` and
+`MUST NOT DO` subsections. Populate those script-created placeholders from the
+approved design bundle without inventing new structure or omitting approved
+fields.
+
 Every `T-xxx` document must state exact paths, symbols, operations, approved
 subdesign references, approved rule references, task-specific `MUST DO`,
 task-specific `MUST NOT DO`, atomic steps, status update expectations, log

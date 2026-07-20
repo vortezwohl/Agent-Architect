@@ -22,6 +22,40 @@ not silently change caller-visible failure behavior.
 - Variation: internal code may normalize errors before returning the stable
   contract.
 
+## RepositoryEvidence
+- The repository already exposes a caller-visible error envelope that existing
+  tests and callers depend on.
+- Internal refactoring will move dispatch control flow, which creates a real
+  risk of drifting status mapping or field placement.
+- Current failure handling is distributed enough that one explicit preservation
+  rule is needed before Build starts restructuring internals.
+
+## CompatibilityBoundary
+- Preserve the existing external error envelope for all current callers.
+- Allow internal normalization and error-routing changes as long as outward
+  field names, meaning, and status mapping remain compatible.
+- Do not broaden this subdesign into a new exception taxonomy or transport
+  redesign.
+
+## PatternDecision
+- Decision: Reject GoF for the primary decision and record this subdesign as an
+  interface-contract preservation boundary.
+- Why: the repository needs an explicit compatibility rule for outward failure
+  behavior, not a reusable object-pattern abstraction.
+- Rejected neighbors: Proxy was rejected because the problem is not mediated
+  access; Template Method was rejected because the contract risk is envelope
+  preservation, not fixed step sequencing.
+
+## ExternalEvidenceDecision
+- Considered evidence: compatibility-preservation guidance, interface-contract
+  examples, and error-normalization patterns from framework practice.
+- Accepted evidence: the external guidance that recommends freezing caller
+  contracts before internal refactors that move control flow.
+- Rejected evidence: generic "collapse all failures" advice was rejected
+  because it would weaken current compatibility for existing callers.
+- Repository fit reasoning: accepted evidence is used only to preserve the
+  current external contract while leaving internal exception structure flexible.
+
 ## Rationale
 Dispatch refactoring can accidentally change failure shape, message placement,
 or status mapping. Recording the contract as a separate approved subdesign
@@ -39,6 +73,14 @@ internal control flow.
 - It does not prescribe internal exception class hierarchy.
 - It does require one consistent normalization point before returning to
   callers.
+
+## VerificationSeams
+- Verify that the external error envelope shape remains unchanged for existing
+  callers.
+- Verify that handler failures pass through one normalization point before
+  leaving the dispatch flow.
+- Verify that no branch-specific error envelope variations are introduced during
+  refactoring.
 
 ## Counterexamples
 - A brand-new internal-only API with no compatibility requirement may not need a

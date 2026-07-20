@@ -18,6 +18,18 @@
 ## StableCoreAndVariation
 {{AGENT:StableCoreAndVariation}}
 
+## RepositoryEvidence
+{{AGENT:RepositoryEvidence}}
+
+## CompatibilityBoundary
+{{AGENT:CompatibilityBoundary}}
+
+## PatternDecision
+{{AGENT:PatternDecision}}
+
+## ExternalEvidenceDecision
+{{AGENT:ExternalEvidenceDecision}}
+
 ## Rationale
 {{AGENT:Rationale}}
 
@@ -26,6 +38,9 @@
 
 ## DesignBoundaries
 {{AGENT:DesignBoundaries}}
+
+## VerificationSeams
+{{AGENT:VerificationSeams}}
 
 ## Counterexamples
 {{AGENT:Counterexamples}}

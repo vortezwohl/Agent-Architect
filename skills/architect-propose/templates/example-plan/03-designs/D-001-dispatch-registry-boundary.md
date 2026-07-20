@@ -23,6 +23,41 @@ handler routing policy directly.
 - Variation: new handlers may be added by extending the registry mapping
   without rewriting the entry branch structure.
 
+## RepositoryEvidence
+- Current request entry logic owns both request parsing and dispatch selection.
+- Existing branching rules are duplicated in the entry path rather than
+  isolated behind one inspectable boundary.
+- The current repository already treats handlers as separate business units, so
+  the missing seam is selection ownership rather than handler implementation.
+
+## CompatibilityBoundary
+- Preserve the current external request contract and the currently supported
+  dispatch outcomes.
+- Allow internal routing structure to change as long as caller-visible request
+  semantics remain stable.
+- Do not add a runtime plugin mechanism or any new public extension surface in
+  this plan.
+
+## PatternDecision
+- Decision: Reject GoF for the primary decision and record this subdesign as a
+  direct architectural boundary.
+- Why: the repository needs one explicit ownership boundary for handler
+  selection, but not a full GoF pattern hierarchy.
+- Rejected neighbors: Strategy was rejected because no stable algorithm family
+  is selected at runtime by a caller-owned slot; Facade was rejected because
+  the issue is not repeated subsystem choreography.
+
+## ExternalEvidenceDecision
+- Considered evidence: registry-style coordination guidance, GoF comparison
+  material, and framework examples that centralize dispatch ownership.
+- Accepted evidence: the external guidance that recommends one explicit lookup
+  seam when routing rules would otherwise scatter horizontally.
+- Rejected evidence: dynamic auto-discovery and plugin-oriented examples were
+  rejected because the repository does not show a real need for runtime
+  extension or reflective loading.
+- Repository fit reasoning: the accepted evidence strengthens a direct,
+  code-declared registry boundary without adding speculative indirection.
+
 ## Rationale
 The current branching flow couples request parsing, dispatch selection, and
 handler invocation. A registry isolates the selection decision, removes
@@ -39,6 +74,13 @@ or inspect dispatch behavior.
 - The registry owns only handler selection.
 - Request parsing and handler business logic stay outside the registry.
 - Registry extension is explicit and code-declared, not dynamic.
+
+## VerificationSeams
+- Verify that request entry delegates selection through one registry boundary.
+- Verify that no duplicate branch-owned routing logic remains after the
+  refactor.
+- Verify that extending the registry mapping does not require changing the
+  caller-visible request contract.
 
 ## Counterexamples
 - A single fixed handler with no branching need does not justify a registry.
